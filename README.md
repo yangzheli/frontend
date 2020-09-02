@@ -48,7 +48,6 @@ function shallowCopy(src){
 }
 
 //自定义函数实现深拷贝(递归)
-```
 function deepCopy(src){
     if(typeof src !== 'object') return;
     var dest = src instanceof Array ? [] : {};
