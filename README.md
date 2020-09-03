@@ -121,11 +121,11 @@ this是一个指针，指向调用函数的对象，this有四种绑定规则：
 
 * JS继承的几种实现方式？
 ```
-1、原型链继承，将父类的实例作为子类的原型。
-2、借助构造函数实现继承
-3、组合继承
-4、寄生组合继承
-5、class继承
+1、原型链继承，将父类的实例作为子类的原型；
+2、借助构造函数实现继承；
+3、组合继承；
+4、寄生组合继承；
+5、class继承，开发中推荐使用的方式。
 ```
 ```
 // 定义父类
@@ -160,6 +160,12 @@ function Cat(name){
     Animal.call(this);
     this.name = name || 'Cat';
 }
+(function(){
+    var Super = function(){};   //创建一个没有实例方法的类
+    Super.prototype = Animal.prototype;
+    Cat.prototype = new Super();    //将实例作为子类的原型
+})();
+var cat = new Cat();
 
 // 5、class继承
 ```
