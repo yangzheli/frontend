@@ -74,6 +74,12 @@ function deepCopy(src){
 }
 ```
 
+* 什么是闭包？
+```
+闭包就是能取其它函数内部变量的函数，作用：1、可以读取函数内部的变量；2、让这些变量的值始终保持在内存中。
+由于闭包会使函数变量保存在内存中，所以在浏览器中可能会导致内存泄漏，解决方法是在退出函数时将不使用的局部变量删除。
+```
+
 * typeof和instanceof有什么区别？
 ```
 JS中使用typeof和instanceof来判断一个变量是什么类型。
@@ -103,12 +109,6 @@ function instace_of(A, B){
 （注：prototype是构造函数的属性，__proto__是每个实例都有的属性，实例的__proto__与其构造函数的prototype指向同一个对象，即该实例的原型）
 ```
 <img src="./assets/原型链.png" style="width:250px; margin:0 auto">
-
-* 什么是闭包？
-```
-闭包就是能取其它函数内部变量的函数，作用：1、可以读取函数内部的变量；2、让这些变量的值始终保持在内存中。
-由于闭包会使函数变量保存在内存中，所以在浏览器中可能会导致内存泄漏，解决方法是在退出函数时将不使用的局部变量删除。
-```
 
 * 如何正确判断this关键字的指向？
 ```
@@ -171,21 +171,102 @@ var cat = new Cat();
 ```
 
 * JS创建对象的几种方式？
+```
+1、通过Object构造函数创建；
+var Person = new Object();
+
+2、使用对象字面量的方式创建（对象字面量是对象定义的一种简写形式）；
+var Person = {
+    name: 'Tom';
+    age: 18;
+}
+
+3、使用工厂模式创建；
+function createPerson(name, age, sex){
+    var obj = new Object();
+    obj.name = name;
+    obj.age = age;
+    obj.sex = sex;
+    return obj;
+}
+var person = createPerson('Tom', 18, 'man');
+
+4、使用构造函数创建；
+function Person(name, age, sex){
+    this.name = name;
+    this.age = age;
+    this.sex = sex;
+}
+var person = new Person('Tom', 18, 'man');
+
+5、使用原型对象创建
+function Person(){}
+Person.prototype.name = 'Tom';
+Person.prototype.age = 18;
+Person.prototype.sex = 'man';
+var person = new Person();
+
+6、组合使用构造函数和原型创建；
+function Person(name, age, sex){
+    this.name = name;
+    this.age = age;
+    this.sex = sex;
+}
+Person.prototype = {
+    constructor: Person;
+}
+var person = new Person('Tom', 18, 'man');
+```
 
 * new操作符具体干了什么？
+```
+new操作可以分为以下4个步骤：
+1、创建一个空对象； 
+2、将空对象的__proto__指向构造函数的prototype； 
+3、将构造函数的this指向空对象，执行构造函数；   
+4、判断构造函数的返回值类型，返回新对象；   
+```
+```
+// 以var p = new Person()为例
+1、const o = new Object();
+2、o.__proto__ = Person.prototype;
+3、var res = Person.call(o);
+4、return typeof res === 'object' ? res : o;
+```
+
+* call、apply和bind方法有什么区别？
+```
+它们的作用都是用来改变函数中this的指向。
+1、call和reply的区别在于两者的传参方式不同，除第一个参数都指向this，call的其它参数都会作为函数形参传入，而apply需要将其它参数包裹在数组中传入。
+2、bind的传参方式和call相同，但是call和apply方法调用后会立即执行，而bind方法调用后会返回一个新的函数，需要手动执行。
+```
 
 * JS异步加载的几种方式？
+```
+JS加载方式分为：（1）同步加载/阻塞加载，只有当前加载完成，才能进行下一步操作，默认同步加载是安全的，但可能会造成页面阻塞；（2）异步加载/非阻塞加载，浏览器在执行js的同时，还会继续对后续页面进行处理。
+异步加载的方式主要有：
+1、Script DOM Element；
+2、onload时的异步加载
+```
 
-* 什么是Promise？
+* 什么是Promise？   
 ```
 Promise对象用于异步操作，表示一个尚未完成且预计在未来完成的异步操作。
 ```
 
-* call、reply有什么区别？
-
-* 事件监听、事件冒泡？
+* 事件监听、事件捕获、事件冒泡？
 
 * 如何解决跨域问题？
+```
+跨域是指浏览器不能执行其它网站的脚本，是由浏览器的同源策略造成的。同源策略是浏览器最基本也是最核心的安全策略，所谓同源是指：协议、域名、端口号都相同，只要有一个不同，就是非同源。
+跨域的常见解决方案有以下几种：
+1、通过jsonp跨域；
+2、document.domain；
+3、nginx代理跨域；
+...
+```
+
+* Set、Map、WeakSet、WeakMap的区别？
 
 * 谈谈你对ES6的了解（ES6的新特性）？
 ```
@@ -193,15 +274,28 @@ Promise对象用于异步操作，表示一个尚未完成且预计在未来完�
 2、新增块作用域（let、const）；
 ```
 
-* DOM操作？
+* 防抖与节流？
+
+* 函数柯里化？
+
+* 什么是window对象，什么是document对象？
 
 * 如何编写高性能的JS？
 
 * 哪些操作会造成内存泄露？
 
+* 谈谈你对模块化的理解？
+
 * webpack?
 
+## HTML
+* 什么是DOM？
+
+* script标签的defer和async是什么？
+
 ## VUE
+* vue生命周期？
+
 * vue是如何实现双向绑定的？
 ```
 1、vue2使用Object.defineProperty进行双向绑定，vue3使用proxy取代之。
@@ -216,5 +310,23 @@ Promise对象用于异步操作，表示一个尚未完成且预计在未来完�
 ## HTTP
 * 平时遇到跨域问题都用什么解决方案？
 
+* 从输入URL到展示的过程？
+```
+1、DNS解析；
+2、TCP三次握手；
+3、客户端发送请求；
+4、
+```
+
+* TCP三次握手？
+
+* HTTP和HTTPS协议的区别？
+
+* 常见状态码？
+
+* get和post的区别？
+
+* Websocket？
+
 ## CSS 
-*
+* 页面导入样式时，使用link和@import的区别？
