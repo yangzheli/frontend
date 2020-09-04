@@ -30,6 +30,16 @@
 
 [HTML](#HTML)
 
+[VUE](#VUE)
+
+[HTTP](#HTTP)
+
+[CSS](#CSS)
+* [页面导入样式时，使用link和@import的区别？](#页面导入样式时，使用link和@import的区别？)
+* [伪类和伪元素的区别？](#伪类和伪元素的区别？)
+* [CSS中position属性有哪些取值，它们的行为是什么？](#CSS中position属性有哪些取值，它们的行为是什么？)
+* [圣杯布局的原理和实现方法？](#圣杯布局的原理和实现方法？)
+
 ## JS
 ### JS数据类型有哪些？
 * 基本数据类型：String、Number、Boolean、Null、Undefined、Symbol（ES6新增，表示独一无二的值）；
@@ -439,6 +449,7 @@ fn(1)(2)(3);    //return 6
 ### HTTP和HTTPS协议的区别？
 
 ### 常见状态码？
+1.消息；2.成功；3.重定向；4.请求错误；5.服务器错误。
 
 ### get和post的区别？
 
@@ -446,10 +457,59 @@ fn(1)(2)(3);    //return 6
 
 ## CSS 
 ### 页面导入样式时，使用link和@import的区别？
+* link是XHTML标签，除了加载CSS之外，还能定义rel连接属性等作用，而@import由CSS提供，只能加载CSS；
+* link引用CSS时，在页面载入时同时加载，而@import需要页面完全载入以后加载；
+* link是XHTML标签，无兼容问题，而@import是CSS2.1提出的，低版本的浏览器不支持；
+* link支持JS控制DOM去改变样式，而@import不支持。
 
 ### 伪类和伪元素的区别？
 CSS规定伪类使用一个冒号(:)来表示，伪元素使用两个冒号(::)来表示。
 * 常见的伪类有:hover, :active, :focus, :visited, :first-child, :last-child等；
 * 常见的伪元素有::before, ::after等。
 
+### CSS中position属性有哪些取值，它们的行为是什么？
+position属性的常用取值有：static、fixed、absolute、relative。
+* static，是position属性的默认值，指无特殊定位；
+* fixed，相对浏览器窗口进行定位；
+* absolute
+* relative
+
 ### 圣杯布局的原理和实现方法？
+圣杯布局解决的问题：中间宽度自适应、两边定宽的三栏布局，且中间栏要放在文档流前面优先渲染。
+
+原理：使用浮动、相对定位和负边距。
+```
+// HTML代码
+<div class="content">
+    <div class="center col"></div>
+    <div class="left col"></div>
+    <div class="right col"></div>
+</div>
+
+// CSS代码
+.content {
+    padding: 0 100px;
+}
+.col {
+    float: left;
+    height: 200px;
+    position: relative;
+}
+.left, .right {
+    width: 100px;
+}
+.left {
+    background: blue;
+    margin-left: -100%;
+    right: 100px;
+}
+.right {
+    background: green;
+    margin-left: -100px;
+    left: 100px;
+}
+.center {
+    width: 100%;
+    background: pink;
+}
+```
