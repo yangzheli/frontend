@@ -29,16 +29,32 @@
 * [webpack?](#webpack?)
 
 [HTML](#HTML)
+* [什么是DOM？](#什么是DOM？)
+* [浏览器是如何渲染页面的？](#浏览器是如何渲染页面的？)
+* [script标签的defer和async属性有什么作用？](#script标签的defer和async属性有什么作用？)
 
 [HTTP](#HTTP)
+* [平时遇到跨域问题都用什么解决方案？](#平时遇到跨域问题都用什么解决方案？)
+* [从输入URL到展示的过程？](#从输入URL到展示的过程？)
+* [TCP三次握手？](#TCP三次握手？)
+* [HTTP和HTTPS协议的区别？](#HTTP和HTTPS协议的区别？)
+* [常见状态码？](#常见状态码？)
+* [get和post的区别？](#get和post的区别？)
+* [Websocket？](#Websocket？)
 
 [VUE](#VUE)
+* [vue的生命周期？](#vue的生命周期？)
+* [vue是如何实现双向绑定的？](#vue是如何实现双向绑定的？)
+* [vue的组件通信？](#vue的组件通信？)
+* [vue的diff算法？](#vue的diff算法？)
+* [vue路由的实现原理？](#vue路由的实现原理？)
 
 [CSS](#CSS)
 * [页面导入样式时，使用link和@import的区别？](#页面导入样式时，使用link和@import的区别？)
 * [伪类和伪元素的区别？](#伪类和伪元素的区别？)
 * [CSS中position属性有哪些取值，它们的行为是什么？](#CSS中position属性有哪些取值，它们的行为是什么？)
 * [圣杯布局的原理和实现方法？](#圣杯布局的原理和实现方法？)
+* [CSS样式优先级？](#CSS样式优先级？)
 
 ## JS
 ### JS数据类型有哪些？
@@ -464,7 +480,7 @@ HTML解释器将HTML文档构建为DOM树的过程过下：<br>
 ### Websocket？
 
 ## VUE
-### vue生命周期？
+### vue的生命周期？
 
 ### vue是如何实现双向绑定的？
 * vue2使用Object.defineProperty进行双向绑定，vue3使用proxy取代之。
