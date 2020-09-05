@@ -30,9 +30,9 @@
 
 [HTML](#HTML)
 
-[VUE](#VUE)
-
 [HTTP](#HTTP)
+
+[VUE](#VUE)
 
 [CSS](#CSS)
 * [页面导入样式时，使用link和@import的区别？](#页面导入样式时，使用link和@import的区别？)
@@ -414,19 +414,25 @@ fn(1)(2)(3);    //return 6
 ## HTML
 ### 什么是DOM？
 
-### script标签的defer和async是什么？
+### 浏览器是如何渲染页面的？
+浏览器从HTTP服务器获取响应报文（HTML文档），到呈现页面给用户，分为如下几个步骤：
+* 构建DOM树，DOM树是以HTMLDocument为根节点，其余节点为子节点组成的一棵树，示意图如下图所示。<br>
+<img src="./assets/DOM树.png" style="width:200px; margin:0 auto"><br>
+HTML解释器将HTML文档构建为DOM树的过程过下：<br>
+（1）字节流（Bytes）；<br>
+（2）被解码为字符流（Characters）；<br>
+（3）被词法解析器解释成词语（Tokens）；<br>
+（4）被语法分析器构建成各种节点；<br>
+（5）组建成一棵DOM树。<br> 
+在HTML解释器构建DOM树过程，可能会有JavaScript代码需要下载和执行，而JavaScript代码的下载和执行会阻塞文档的解析。因此，为防止页面阻塞，可以合理使用script标签的defer和async属性，或者将script元素放在body元素后面，提高用户体验。
 
-## VUE
-### vue生命周期？
+* 构建CSSOM树，构建DOM树过程中文档head遇到link标记引用外部CSS样式表，会进行CSSOM树的构建。CSSOM树和DOM树构建过程相同，CSSOM树生成节点时，每个节点首先会继承父节点的所有样式，然后根据优先级对样式进行覆盖。
+* 构建渲染树，渲染树由DOM树和CSSOM树合并而成；
+* 布局与绘制页面<br>
+布局：浏览器按照从上到下、从左到右的顺序读取渲染树的节点，放到文档流上，如果节点A是节点B的子节点，在放入文档流时就应该将节点A按顺序放入到节点B的内部，这样浏览器就计算出了每个节点该放在页面哪个位置。<br>
+绘制：布局完成后，浏览器就将所有节点绘制出来，完成页面的渲染。
 
-### vue是如何实现双向绑定的？
-* vue2使用Object.defineProperty进行双向绑定，vue3使用proxy取代之。
-
-### vue的组件通信？
-
-### vue的diff算法？
-
-### vue路由的实现原理？
+### script标签的defer和async属性有什么作用？
 
 ## HTTP
 ### 平时遇到跨域问题都用什么解决方案？
@@ -441,8 +447,10 @@ fn(1)(2)(3);    //return 6
 ### 从输入URL到展示的过程？
 * DNS解析；
 * TCP三次握手；
-* 客户端发送请求；
-* 
+* 客户端（浏览器）发送HTTP请求；
+* 服务器处理请求并返回HTTP报文；
+* 浏览器根据响应报文对页面进行渲染；
+* 断开TCP连接。
 
 ### TCP三次握手？
 
@@ -454,6 +462,18 @@ fn(1)(2)(3);    //return 6
 ### get和post的区别？
 
 ### Websocket？
+
+## VUE
+### vue生命周期？
+
+### vue是如何实现双向绑定的？
+* vue2使用Object.defineProperty进行双向绑定，vue3使用proxy取代之。
+
+### vue的组件通信？
+
+### vue的diff算法？
+
+### vue路由的实现原理？
 
 ## CSS 
 ### 页面导入样式时，使用link和@import的区别？
@@ -471,8 +491,8 @@ CSS规定伪类使用一个冒号(:)来表示，伪元素使用两个冒号(::)�
 position属性的常用取值有：static、fixed、absolute、relative。
 * static，是position属性的默认值，指无特殊定位；
 * fixed，相对浏览器窗口进行定位；
-* absolute
-* relative
+* absolute，绝对定位，相对于static定位之外的第一个父元素进行定位；
+* relative，相对定位，相对于正常位置进行定位。
 
 ### 圣杯布局的原理和实现方法？
 圣杯布局解决的问题：中间宽度自适应、两边定宽的三栏布局，且中间栏要放在文档流前面优先渲染。
@@ -513,3 +533,6 @@ position属性的常用取值有：static、fixed、absolute、relative。
     background: pink;
 }
 ```
+
+### CSS样式优先级？
+HTML中的style样式>内联样式>外部样式>用户设置>浏览器默认样式
