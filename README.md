@@ -16,13 +16,13 @@
 * [call、apply和bind方法有什么区别？](#call、apply和bind方法有什么区别？)
 * [JS异步加载的几种方式？](#JS异步加载的几种方式？)
 * [什么是Promise？](#什么是Promise？)
+* [async/await的概念？](#async/await的概念？)
 * [事件监听、事件捕获、事件冒泡（事件委托机制）？](#事件监听、事件捕获、事件冒泡（事件委托机制）？)
 * [Set、Map、WeakSet、WeakMap的区别？](#Set、Map、WeakSet、WeakMap的区别？)
 * [谈谈你对ES6的了解（ES6的新特性）？](#谈谈你对ES6的了解（ES6的新特性）？)
 * [防抖与节流？](#防抖与节流？)
 * [函数柯里化？](#函数柯里化？)
 * [什么是window对象，什么是document对象？](#什么是window对象，什么是document对象？)
-* [sync/await的概念？](#sync/await的概念？)
 * [如何编写高性能的JS？](#如何编写高性能的JS？)
 * [哪些操作会造成内存泄露？](#哪些操作会造成内存泄露？)
 * [谈谈你对模块化的理解？](#谈谈你对模块化的理解？)
@@ -56,6 +56,8 @@
 * [圣杯布局的原理和实现方法？](#圣杯布局的原理和实现方法？)
 * [CSS样式优先级？](#CSS样式优先级？)
 
+[算法](#算法)
+
 ## JS
 ### JS数据类型有哪些？
 * 基本数据类型：String、Number、Boolean、Null、Undefined、Symbol（ES6新增，表示独一无二的值）；
@@ -76,6 +78,23 @@
 * var存在变量提升，而let、const不存在变量提升，未声明时是无法访问该变量的；
 * const一旦声明必须赋值，声明后不能修改，如果声明的是对象，可以修改其属性；
 * 同一作用域下let和const不能声明同名变量，而var可以。
+```
+// var和let作用域的常见面试题
+//知识点：JS的事件循环机制，setTimeout的机制
+for(var i = 0; i < 10; i++){
+    setTimeout(function(){
+        console.log(i);
+    }, 0);
+}
+//输出 10   共10个
+
+for(let i = 0; i < 10; i++){
+    setTimeout(function(){
+        console.log(i);
+    }, 0);
+}
+//输出 0 1 2 3 4 5 6 7 8 9
+```
 
 ### 为什么var可以重复声明？
 * 编译器在遇到var关键字，会判断变量是否已经声明，如果已经声明则会忽略var直接对变量进行赋值。
@@ -298,10 +317,54 @@ JS加载方式分为：
 
 异步加载的方式主要有：
 * Script DOM Element；
-* onload时的异步加载
+* onload时的异步加载；
+* script标签的defer和async属性；
 
 ### 什么是Promise？   
 * Promise对象用于异步操作，表示一个尚未完成且预计在未来完成的异步操作。
+* Promise对象的状态不受外界影响，有三种状态：<br>
+（1）pending：初始状态；<br>
+（2）fulfilled：已成功；<br>
+（3）rejected：已失败。<br>
+只有异步操作的结果可以决定当前是哪一种状态，而且一旦状态改变就不会再变，即Promise对象状态只能由pending变成fulfilled，或由pending变成rejected；
+* new Promise在实例化过程中执行的代码是同步进行的，then中的回调才是异步执行的（所有会进入异步的都是指事件回调中的那部分代码）。
+
+```
+// 基础用法
+const p1 = new Promise(function(resolve, reject){
+    if(//异步操作成功){
+        resolve(value);
+    }else{
+        reject(error);
+    }
+});
+
+p1.then(
+    //success
+    function(value){},
+    //failure
+    function(error){}
+);
+```
+
+Promise对象的几个重要方法：
+* Promise.all()，方法接收一个数组作为参数，p1、p2、p3都是Promise实例，p的状态要变成fulfilled，只有p1、p2、p3的状态都变成fulfilled，否则p的状态就变成rejected（类似于电路中的串联）；
+```
+// 示例
+const p = Promise.all([p1, p2, p3]);
+```
+* Promise.race()，方法也接收一个数组作为参数，p1、p2、p3中哪个状态先发生改变，无论成功或失败，p的状态也会跟着它改变；
+```
+// 示例
+const p = Promise.all([p1, p2, p3]);
+```
+* Promise.resolve()，将现有对象转换成Promise对象，该实例状态为fulfilled；
+* Promise.reject()，返回一个Promise实例，该实例状态为rejected。
+
+### async/await的概念？
+* async/await实际上就是Generator的语法糖，在函数前加上async关键字表示将函数声明为异步函数，await表示等待一个异步方法执行完成；
+* async函数返回一个Promise对象，return返回值就是then方法中回调函数的参数；
+* async函数被调用后会立即执行，一旦遇到await就会先返回，等到异步操作执行完成后，再接着执行函数体后面的语句；
 
 ### 事件监听、事件捕获、事件冒泡（事件委托机制）？
 
@@ -410,8 +473,6 @@ fn(1)(2)(3);    //return 6
 
 ### 什么是window对象，什么是document对象？
 
-### async/await的概念？
-
 ### 如何编写高性能的JS？
 * 遵循严格模式："use strict"；
 
@@ -427,8 +488,31 @@ fn(1)(2)(3);    //return 6
 
 ### webpack?
 
+### 微任务、宏任务与事件轮询（Event Loop）？
+
 ## HTML
+### HTML行内元素和块级元素的区别？
+* 行内元素（内联元素）：和其它行内元素在同一行，不可设置宽高，只能容纳文本或者其它行内元素；
+* 块级元素：总是在新的一行开始排列，可以设置宽高，可以容纳其它块级元素和行内元素；
+* 可以通过修改display属性对行内元素和块级元素进行切换；
+* 常见行内元素：a、span、img、input、textarea、select、button等；
+* 常见块级元素：div、p、h1~h6、ul、li、header、footer、section等。
+
 ### 什么是DOM？
+DOM，即文档对象模型。DOM将HTML文档表达为树结构（DOM树、CSSOM树、渲染树），可以通过DOM访问和操作HTML文档的内容。
+
+### 什么是Virtual DOM？
+Virtual DOM，即虚拟节点。首先需要明白为什么要使用虚拟DOM，为实现数据变化时页面也随之变化，有如下几种实现方式：
+* 重新构建整个DOM树，重新渲染；（效率低下）
+* 遍历整个DOM树，查找数据变化的节点，重新渲染该节点；（实现困难）
+* 当数据变化时，建立新的虚拟DOM树，比较新的虚拟DOM树和旧的虚拟DOM树的差异，将差异运用到真正的DOM树上。（实现简单，效率较高）
+
+Virtual DOM算法的实现过程：
+* 用JS对象模拟DOM树；
+* 比较新旧虚拟DOM树的差异（Virtual DOM的diff算法）；
+* 将差异运用到真正的DOM树上。
+
+[深度剖析：如何实现一个 Virtual DOM 算法 #13](https://github.com/livoras/blog/issues/13)
 
 ### 浏览器是如何渲染页面的？
 浏览器从HTTP服务器获取响应报文（HTML文档），到呈现页面给用户，分为如下几个步骤：
@@ -440,7 +524,7 @@ HTML解释器将HTML文档构建为DOM树的过程过下：<br>
 （3）被词法解析器解释成词语（Tokens）；<br>
 （4）被语法分析器构建成各种节点；<br>
 （5）组建成一棵DOM树。<br> 
-在HTML解释器构建DOM树过程，可能会有JavaScript代码需要下载和执行，而JavaScript代码的下载和执行会阻塞文档的解析。因此，为防止页面阻塞，可以合理使用script标签的defer和async属性，或者将script元素放在body元素后面，提高用户体验。
+在HTML解释器构建DOM树过程，可能会有JavaScript代码需要下载和执行，而JavaScript代码的下载和执行会阻塞文档的解析。因此，为防止页面阻塞，可以合理使用script标签的defer和async属性，或者将script元素放在body元素的最后面，提高用户体验。
 
 * 构建CSSOM树，构建DOM树过程中文档head遇到link标记引用外部CSS样式表，会进行CSSOM树的构建。CSSOM树和DOM树构建过程相同，CSSOM树生成节点时，每个节点首先会继承父节点的所有样式，然后根据优先级对样式进行覆盖。
 * 构建渲染树，渲染树由DOM树和CSSOM树合并而成；
@@ -449,6 +533,12 @@ HTML解释器将HTML文档构建为DOM树的过程过下：<br>
 绘制：布局完成后，浏览器就将所有节点绘制出来，完成页面的渲染。
 
 ### script标签的defer和async属性有什么作用？
+HTML解释器在构建DOM树过程中，如果遇到script标签（没有defer或async属性），会立即加载并执行其中的JavaScript代码，造成文档解析的阻塞。script标签的defer和async属性能使解释器异步加载JavaScript代码。
+* defer：文档解析和JavaScript代码的加载（不执行）是异步执行的，JavaScript代码的执行需要等到文档中所有元素解析完成之后，DOMContentLoaded事件触发执行之前。如果存在多个defer属性的JavaScript代码，它们按照加载顺序执行；
+* async：文档解析和JavaScript代码的加载是异步执行的，JavaScript代码加载完成后会立即执行，此时文档解析会停止。
+
+### DOMContentLoaded和load的区别？
+DOMContentLoaded在HTML文档加载和解析完成之后触发，无需等待样式表、图像和子框架的完成加载，而load在HTML所有相关资源被加载完成后触发。
 
 ## HTTP
 ### 平时遇到跨域问题都用什么解决方案？
@@ -461,7 +551,8 @@ HTML解释器将HTML文档构建为DOM树的过程过下：<br>
 * ...
 
 ### 从输入URL到展示的过程？
-* DNS解析；
+* DNS解析，为方便用户访问互联网，Internet将域名和IP地址进行映射，用户可以通过域名访问网站，而不用去记住它的IP地址。通过域名得到主机对应的IP地址的过程就是DNS解析；<br>
+DNS查询的两种方式：递归查询和迭代查询；
 * TCP三次握手；
 * 客户端（浏览器）发送HTTP请求；
 * 服务器处理请求并返回HTTP报文；
@@ -510,6 +601,8 @@ position属性的常用取值有：static、fixed、absolute、relative。
 * absolute，绝对定位，相对于static定位之外的第一个父元素进行定位；
 * relative，相对定位，相对于正常位置进行定位。
 
+### CSS中display属性有哪些取值，它们的行为是什么？
+
 ### 圣杯布局的原理和实现方法？
 圣杯布局解决的问题：中间宽度自适应、两边定宽的三栏布局，且中间栏要放在文档流前面优先渲染。
 
@@ -550,5 +643,9 @@ position属性的常用取值有：static、fixed、absolute、relative。
 }
 ```
 
+### 垂直居中如何实现？
+
 ### CSS样式优先级？
 HTML中的style样式>内联样式>外部样式>用户设置>浏览器默认样式
+
+## 算法
