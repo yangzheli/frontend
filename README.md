@@ -1,6 +1,5 @@
 # 前端面经
 [JS](#JS)
-
 * [JS数据类型有哪些？](#JS数据类型有哪些？)
 * [Null和Undefined的差异？](#Null和Undefined的差异？)
 * [var、let和const关键字的区别？](#var、let和const关键字的区别？)
@@ -18,7 +17,9 @@
 * [JS异步加载的几种方式？](#JS异步加载的几种方式？)
 * [什么是Promise？](#什么是Promise？)
 * [async/await的概念？](#async/await的概念？)
-* [事件监听、事件捕获、事件冒泡（事件委托机制）？](#事件监听、事件捕获、事件冒泡（事件委托机制）？)
+* [JS的事件捕获与事件冒泡？](#JS的事件捕获与事件冒泡？)
+* [JS事件委托机制？](#JS事件委托机制？)
+* [JS事件绑定的几种方式？](#JS事件绑定的几种方式？)
 * [Set、Map、WeakSet、WeakMap的区别？](#Set、Map、WeakSet、WeakMap的区别？)
 * [谈谈你对ES6的了解（ES6的新特性）？](#谈谈你对ES6的了解（ES6的新特性）？)
 * [防抖与节流？](#防抖与节流？)
@@ -55,9 +56,14 @@
 * [伪类和伪元素的区别？](#伪类和伪元素的区别？)
 * [CSS中position属性有哪些取值，它们的行为是什么？](#CSS中position属性有哪些取值，它们的行为是什么？)
 * [圣杯布局的原理和实现方法？](#圣杯布局的原理和实现方法？)
+* [垂直居中如何实现？](#垂直居中如何实现？)
 * [CSS样式优先级？](#CSS样式优先级？)
+* [CSS盒子模型？](#CSS盒子模型？)
 
 [算法](#算法)
+* [快速排序](#快速排序)
+* [数组扁平化](#数组扁平化)
+* [相交链表](#相交链表)
 
 ## JS
 ### JS数据类型有哪些？
@@ -367,7 +373,68 @@ const p = Promise.all([p1, p2, p3]);
 * async函数返回一个Promise对象，return返回值就是then方法中回调函数的参数；
 * async函数被调用后会立即执行，一旦遇到await就会先返回，等到异步操作执行完成后，再接着执行函数体后面的语句；
 
-### 事件监听、事件捕获、事件冒泡（事件委托机制）？
+### JS的事件捕获与事件冒泡？
+事件就是文档或浏览器窗口发生的一些特定交互瞬间，比如用户点击页面的某个内容，某个页面加载完成等。<br>
+事件流描述的是从页面中接收事件的顺序，IE提出的是冒泡流，Netscape提出的是捕获流，两者截然相反。
+* 事件捕获：事件开始由不太具体的节点接收，然后逐级向下传播到最具体的元素；
+* 事件冒泡：事件开始由最具体的元素接收，然后逐级向上传播到较不具体的节点；
+* DOM事件流的三个阶段：事件捕获阶段、处于目标阶段、事件冒泡阶段。示意图如下图所示。<br>
+<img src="./assets/DOM事件流.png" style="width:200px; margin:0 auto">
+
+### JS事件委托机制？
+应用场景：很多DOM节点都需要监听的情况，如果给每个DOM节点都绑定监听函数，对性能会有极大影响，可以利用事件委托来解决这一问题。<br>
+事件委托：利用事件冒泡的机制，委托父节点代为执行事件。
+```
+// 示例（为每个子节点li添加点击事件）
+<ul id="ul">
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+</ul>
+
+// 不利用事件委托机制实现
+// 当li数量很多时，性能将会很差
+window.onload = function(){
+    var Li = document.getElementById('ul').getElementsByTagName('li');
+    for(let i = 0; i < Li.length; i++){
+        Li[i].onclick = function(){
+            // 触发操作
+        }
+    }
+}
+
+// 利用事件委托机制实现
+// 只需要对父节点添加事件
+window.onload = function(){
+    var Ul = document.getElementById('ul');
+    Ul.onclick = function(event){
+        var e = event || window.event;
+        var target = e.target || e.srcElement;
+        if(target.nodeName.toLowerCase() === 'li'){
+            // 触发操作
+        }
+    }
+}
+```
+
+### JS事件绑定的几种方式？
+JS中三种常用的绑定事件的方法：
+* 在DOM元素中直接绑定，例如：
+```
+<input onclick="" type="button" />
+```
+* 在JavaScript代码中绑定，例如：
+```
+<input id="input" type="button" />
+<script type="text/javascript">
+    document.getElementById("input").onclick = function(){}
+</script>
+```
+* 绑定事件监听函数，addEventListener()或attachEvent()，语法：
+```
+elementObject.addEventListener(eventName, handle, useCapture);  //参数useCapture指是否使用事件捕获，默认为false
+elementObject.attachEvent(eventName, handle);
+```
 
 ### Set、Map、WeakSet、WeakMap的区别？
 Set、Map、WeakSet、WeakMap是ES6新增的数据结构。
@@ -489,7 +556,7 @@ fn(1)(2)(3);    //return 6
 
 ### webpack?
 
-### 微任务、宏任务与事件轮询（Event Loop）？
+### 微任务、宏任务与事件轮询/事件循环（Event Loop）？
 
 ## HTML
 ### HTML行内元素和块级元素的区别？
@@ -649,4 +716,62 @@ position属性的常用取值有：static、fixed、absolute、relative。
 ### CSS样式优先级？
 HTML中的style样式>内联样式>外部样式>用户设置>浏览器默认样式
 
+### CSS盒子模型？
+盒子模型就是把HTML元素看作一个矩形的盒子，每个矩形都由元素的内容（content）、内边距（padding）、边框（border）和外边距（margin）组成。矩形盒子描述了一个文档元素在页面布局中的位置和大小。下图就是盒子模型的示意图：<br>
+<img src="./assets/CSS盒子模型.png" style="width:200px; margin:0 auto">
+
+* 每个盒子都有内容、内边距、边框、外边距4个属性，每个属性都包括上、右、下、左4个部分；
+* content，即设置盒子的宽度（width）和高度（height）；
+* padding：上 右 下 左（取值个数不同，表示的意思也不同）；
+* border：border-width || border-style || border-color（综合写法，3个子属性的顺序不能写错）；
+* margin：上 右 下 左（取值个数不同，表示的意思也不同），margin属性存在外边距合并现象，即：<br>
+（1）上下相邻的块元素垂直外边距合并：上下相邻的两个块元素，如果上面的元素有下外边距margin-bottom，同时下面的元素有上外边距margin-top，那么它们之间的垂直间距不是margin-bottom与margin-top之和，而是两者中的较大者；<br>
+（2）嵌套块元素垂直外边距合并：两个父子关系的块元素，如果父元素上内边距和边框，父元素的上外边距会与子元素的上外边距发生合并，合并的外边距为两者中的较大者。
+* 根据盒子模型布局的稳定性，应该优先使用width和height，其次使用padding，再考虑使用margin。
+
+其它与盒子模型相关的属性：
+* border-radius（圆角边框）：上 右 下 左（取值个数不同，表示的意思也不同）；
+* box-shadow（盒子阴影）：h-shadow v-shadow blur spread color inset（前两个取值必须，其余可以省略）。
+
 ## 算法
+### 快速排序
+
+### 数组扁平化
+将一个多维数组变为一个一维数组，例如：[1, 2, [3, [4, 5]]] --> [1, 2, 3, 4, 5]。
+```
+// 1.递归
+function flatten(arr){
+    var res = [];
+    for(let i = 0; i < arr.length; i++){
+        if(Array.isArray(arr[i])){
+            res = res.concat(flatten(arr[i]));
+        }else{
+            res.push(arr[i]);
+        }
+    }
+    return res;
+}
+
+// 2.toString & split
+function flatten(arr){
+    return arr.toString().split(',').map(function(item){
+        return parseInt(item);
+    })
+}
+
+// 3.join & split
+function flatten(arr){
+    return arr.join(',').split(',').map(function(item){
+        return parseInt(item);
+    })
+}
+
+// 其它：reduce
+         ES6扩展运算符 [].concat(...[1, 2, [3, [4, 5]]]);
+```
+
+### 相交链表
+找出两个单链表相交的起始节点。
+```
+// 注意：两个单链表相交不会出现X型交叉，因为单链表每个节点只有一个next指针域
+```
