@@ -29,11 +29,15 @@
 * [哪些操作会造成内存泄露？](#哪些操作会造成内存泄露？)
 * [谈谈你对模块化的理解？](#谈谈你对模块化的理解？)
 * [webpack?](#webpack?)
+* [JS的事件循环机制以及微任务、宏任务？](#JS的事件循环机制以及微任务、宏任务？)
 
 [HTML](#HTML)
+* [HTML行内元素和块级元素的区别？](#HTML行内元素和块级元素的区别？)
 * [什么是DOM？](#什么是DOM？)
+* [什么是虚拟DOM？](#什么是虚拟DOM？)
 * [浏览器是如何渲染页面的？](#浏览器是如何渲染页面的？)
 * [script标签的defer和async属性有什么作用？](#script标签的defer和async属性有什么作用？)
+* [DOMContentLoaded和load的区别？](#DOMContentLoaded和load的区别？)
 
 [HTTP](#HTTP)
 * [平时遇到跨域问题都用什么解决方案？](#平时遇到跨域问题都用什么解决方案？)
@@ -42,19 +46,24 @@
 * [HTTP和HTTPS协议的区别？](#HTTP和HTTPS协议的区别？)
 * [常见状态码？](#常见状态码？)
 * [get和post的区别？](#get和post的区别？)
-* [Websocket？](#Websocket？)
+* [Websocket的使用场景？](#Websocket的使用场景？)
+
+[操作系统](#操作系统)
+* [进程和线程的区别？](#进程和线程的区别？)
 
 [VUE](#VUE)
-* [vue的生命周期？](#vue的生命周期？)
-* [vue是如何实现双向绑定的？](#vue是如何实现双向绑定的？)
-* [vue的组件通信？](#vue的组件通信？)
-* [vue的diff算法？](#vue的diff算法？)
-* [vue路由的实现原理？](#vue路由的实现原理？)
+* [Vue的生命周期？](#Vue的生命周期？)
+* [Vue是如何实现双向绑定的？](#Vue是如何实现双向绑定的？)
+* [Vue的组件通信？](#Vue的组件通信？)
+* [Vue的diff算法？](#Vue的diff算法？)
+* [Vue路由的实现原理？](#Vue路由的实现原理？)
 
 [CSS](#CSS)
 * [页面导入样式时，使用link和@import的区别？](#页面导入样式时，使用link和@import的区别？)
 * [伪类和伪元素的区别？](#伪类和伪元素的区别？)
 * [CSS中position属性有哪些取值，它们的行为是什么？](#CSS中position属性有哪些取值，它们的行为是什么？)
+* [CSS中display属性有哪些取值，它们的行为是什么？](#CSS中display属性有哪些取值，它们的行为是什么？)
+* [两栏布局的原理和实现方法？](#两栏布局的原理和实现方法？)
 * [圣杯布局的原理和实现方法？](#圣杯布局的原理和实现方法？)
 * [垂直居中如何实现？](#垂直居中如何实现？)
 * [CSS样式优先级？](#CSS样式优先级？)
@@ -174,9 +183,15 @@ function instace_of(A, B){
 }
 ```
 
+### JS中判断数据类型的方式？
+* typeof；
+* instanceof；
+* constructor，返回对象相应的构造函数（对于构造函数Parent，Parent.prototype.constructor === Parent;&nbsp;&nbsp;//true）；
+* Object.prototype.toString，toString方法默认返回调用者的具体类型，更严格的讲就是this指向的对象类型。必须通过Object.prototype.toString来查找，而不能直接使用toString方法，是因为直接调用toString方法，实际上调用的重写后的方法，而不是Object.prototype中的toString方法。
+
 ### 什么是原型、原型链？
 * 每个对象都有一个原型对象，通过__proto__指针指向其原型对象，并从中继承方法和属性，同时原型对象也可能拥有原型，这样一层一层最终指向null（原型链的终点，Object.prototype.__proto__指向null）。这种关系链被称为原型链，通过原型链一个对象可以继承其它对象的方法和属性，是实现继承的主要方式。
-* 构造函数Parent、原型Parent.prototype和实例p之间的关系如下图所示（p.__proto__ === Parent.prototype）。
+* 构造函数Parent、原型Parent.prototype和实例p之间的关系如下图所示（p.__proto__ === Parent.prototype;&nbsp;&nbsp;//true）。
 （注：prototype是构造函数的属性，__proto__是每个实例都有的属性，实例的__proto__与其构造函数的prototype指向同一个对象，即该实例的原型）
 <img src="./assets/原型链.png" style="width:250px; margin:0 auto">
 
@@ -368,6 +383,8 @@ const p = Promise.all([p1, p2, p3]);
 * Promise.resolve()，将现有对象转换成Promise对象，该实例状态为fulfilled；
 * Promise.reject()，返回一个Promise实例，该实例状态为rejected。
 
+### Promise为什么可以链式调用？
+
 ### async/await的概念？
 * async/await实际上就是Generator的语法糖，在函数前加上async关键字表示将函数声明为异步函数，await表示等待一个异步方法执行完成；
 * async函数返回一个Promise对象，return返回值就是then方法中回调函数的参数；
@@ -556,7 +573,20 @@ fn(1)(2)(3);    //return 6
 
 ### webpack?
 
-### 微任务、宏任务与事件轮询/事件循环（Event Loop）？
+### JS的事件循环机制以及微任务、宏任务？
+JS是单线程、非阻塞的语言，单线程指JS中只有一个主线程来处理所有的任务（保证程序执行的一致性），非阻塞指当需要执行一项异步任务时，主线程会挂起（pending）这个任务，在异步任务返回结果时再执行相应的回调。
+* 所有任务可以分为同步任务和异步任务。同步任务即立即执行的任务，会进入主线程中执行；异步任务即异步执行的任务，通过任务队列的机制协调；
+* JS是单线程的，但浏览器是多线程的。
+
+JS通过事件循环（Event Loop）来实现异步，过程如下图所示：<br>
+<img src="./assets/JS事件循环.png" style="width:200px; margin:0 auto">
+
+微任务和宏任务都是异步任务，常用的微任务和宏任务有：
+* 微任务：原生Promise，process.nextTick，Object.observe（已废弃），MutationObserver（已废弃），MessageChannel（Vue中nextTick实现原理）；
+* 宏任务：script整体，setTimeout，setInterval，setImmediate，I/O；
+
+微任务和宏任务的执行过程如下图所示：<br>
+<img src="./assets/微任务与宏任务.png" style="width:200px; margin:0 auto">
 
 ## HTML
 ### HTML行内元素和块级元素的区别？
@@ -569,8 +599,8 @@ fn(1)(2)(3);    //return 6
 ### 什么是DOM？
 DOM，即文档对象模型。DOM将HTML文档表达为树结构（DOM树、CSSOM树、渲染树），可以通过DOM访问和操作HTML文档的内容。
 
-### 什么是Virtual DOM？
-Virtual DOM，即虚拟节点。首先需要明白为什么要使用虚拟DOM，为实现数据变化时页面也随之变化，有如下几种实现方式：
+### 什么是虚拟DOM？
+虚拟DOM（Virtual DOM），即虚拟节点。首先需要明白为什么要使用虚拟DOM，为实现数据变化时页面也随之变化，有如下几种实现方式：
 * 重新构建整个DOM树，重新渲染；（效率低下）
 * 遍历整个DOM树，查找数据变化的节点，重新渲染该节点；（实现困难）
 * 当数据变化时，建立新的虚拟DOM树，比较新的虚拟DOM树和旧的虚拟DOM树的差异，将差异运用到真正的DOM树上。（实现简单，效率较高）
@@ -632,23 +662,49 @@ DNS查询的两种方式：递归查询和迭代查询；
 ### HTTP和HTTPS协议的区别？
 
 ### 常见状态码？
-1.消息；2.成功；3.重定向；4.请求错误；5.服务器错误。
+HTTP状态码表示服务器对HTTP请求的响应状态，由3位数字和原因短语组成，数字中第一位指定响应类别，根据响应类别可分为以下5种：
+* 1xx：消息，接受的请求正在处理；
+* 2xx：成功，请求正常处理完毕；
+* 3xx：重定向，需要进行附加操作以完成请求；
+* 4xx：请求错误，客户端请求出错；
+* 5xx：服务器错误，服务器处理请求出错。
+
+各类别常见的状态码：
+* 200 OK：（从客户端发送给服务器）请求被正常处理并返回；
+* 204 No Content：请求被成功处理，但响应报文没有资源可以返回；
+* 206 Partial Content：对部分数据区间的数据发送请求，成功执行并返回指定范围的数据；
+* 301 Moved Permanently：永久性重定向，请求的资源被分配了新的URL，之后应使用新的URL；
+* 302 Found：临时性重定向，请求的资源被分配了新的URL，希望本次使用新的URL；
+* 303 See Other：请求的资源被分配了新的URL，应使用GET方法获取请求资源；
+* 304 Not Modified：客户端发送带条件的GET请求，而自上次访问以来或根据请求条件，响应内容没有发生改变，服务器返回该状态码；
+* 400 Bad Request：请求报文中存在语法错误；
+* 401 Unauthorized：未经许可，需要经过HTTTP认证；
+* 403 Forbidden：服务器拒绝本次访问，访问权限出现问题；
+* 404 Not Found：服务器上无法找到请求的资源；
+* 500 Internal Server Error：服务器在执行请求时发生错误；
+* 503 Service Unavailable：服务器因维护或超负载停机，无法处理请求。
 
 ### get和post的区别？
 
-### Websocket？
+### Websocket的使用场景？
+
+## 操作系统
+### 进程和线程的区别？
 
 ## VUE
-### vue的生命周期？
+### Vue的生命周期？
 
-### vue是如何实现双向绑定的？
+### Vue是如何实现双向绑定的？
 * vue2使用Object.defineProperty进行双向绑定，vue3使用proxy取代之。
 
-### vue的组件通信？
+### Vue的组件通信？
 
-### vue的diff算法？
+### Vue的diff算法？
 
-### vue路由的实现原理？
+### Vue路由的实现原理？
+前端路由的一个核心就是更新视图但不重新请求页面，实现方式主要有两种：
+* 利用URL中的hash（"#"）；
+* 利用History API在HTML5中新增的方法。
 
 ## CSS 
 ### 页面导入样式时，使用link和@import的区别？
@@ -670,6 +726,15 @@ position属性的常用取值有：static、fixed、absolute、relative。
 * relative，相对定位，相对于正常位置进行定位。
 
 ### CSS中display属性有哪些取值，它们的行为是什么？
+
+### 两栏布局的原理和实现方法？
+两栏布局：左侧栏定宽，右侧栏自适应。实现方式：
+* float + margin；
+```
+// HTML代码
+<div class="left"></div>
+<div class="right"></div>
+```
 
 ### 圣杯布局的原理和实现方法？
 圣杯布局解决的问题：中间宽度自适应、两边定宽的三栏布局，且中间栏要放在文档流前面优先渲染。
