@@ -30,6 +30,7 @@
 * [谈谈你对模块化的理解？](#谈谈你对模块化的理解？)
 * [webpack?](#webpack?)
 * [JS的事件循环机制以及微任务、宏任务？](#JS的事件循环机制以及微任务、宏任务？)
+* [正则表达式总结](#正则表达式总结)
 
 [HTML](#HTML)
 * [HTML行内元素和块级元素的区别？](#HTML行内元素和块级元素的区别？)
@@ -95,7 +96,7 @@
 * var存在变量提升，而let、const不存在变量提升，未声明时是无法访问该变量的；
 * const一旦声明必须赋值，声明后不能修改，如果声明的是对象，可以修改其属性；
 * 同一作用域下let和const不能声明同名变量，而var可以。
-```
+```javascript
 // var和let作用域的常见面试题
 //知识点：JS的事件循环机制，setTimeout的机制
 for(var i = 0; i < 10; i++){
@@ -119,7 +120,7 @@ for(let i = 0; i < 10; i++){
 ### JS中什么是变量提升？什么是暂时性死区？
 * 变量提升就是在声明之前就可以使用，值为undefined；而使用let/const声明变量前，该变量都是不可用的，语法上称为“暂时性死区”；
 * 暂时性死区的本质就是变量已经存在但是不可获取，只有等到变量被声明时才能获取和使用该变量。
-```
+```javascript
 // 变量提升
 typeof x;   //undefined，不会报错
 var x;
@@ -132,7 +133,7 @@ lex y;
 ### 深拷贝和浅拷贝的区别？
 * 浅拷贝是复制了对象的引用地址，而非堆中的值，即两个对象指向同一个存储空间，修改其中一个对象的值另一个值也会改变，例如object.assign()；
 * 深拷贝将对象及值复制过来，两个对象修改其中的值另一个值都不会改变，例如JSON.parse()和JSON.stringify()。
-```
+```javascript
 // 自定义函数实现浅拷贝
 function shallowCopy(src){
     var dest = {};
@@ -168,7 +169,7 @@ function deepCopy(src){
 JS中使用typeof和instanceof来判断一个变量是什么类型。
 * typeof对于基本数据类型除了null（typeof null输出为对象）都可以显示正确类型，对于引用类型除了函数输出'function'，其它输出全是'object'，因此无法准确知道对象的类型；
 * instanceof用来判断某个构造函数的prototype属性是否存在于检测对象的原型链上，即一个变量是否属于某个对象的实例，因此，instanceof只能正确判断引用类型。
-```
+```javascript
 // instanceof实现代码(A instanceof B)
 function instace_of(A, B){
     let prototype = B.prototype;
@@ -205,7 +206,7 @@ this是一个指针，指向调用函数的对象，this有四种绑定规则：
 
 ### JS继承的几种实现方式？
 * 原型链继承，将父类的实例作为子类的原型；
-```
+```javascript
 // 定义父类
 function Animal(name){  
     this.name = name || 'Animal';    // 属性
@@ -219,7 +220,7 @@ Cat.prototype = new Animal();  // 将父类的实例作为子类的原型
 Cat.prototype.name = 'Cat';
 ```
 * 借助构造函数实现继承；
-```
+```javascript
 // 2、构造函数继承
 function Cat(name){
     Animal.call(this);
@@ -228,7 +229,7 @@ function Cat(name){
 var cat = new Cat();
 ```
 * 组合继承；
-```
+```javascript
 // 3、组合继承
 function Cat(name){
     Animal.call(this);
@@ -238,7 +239,7 @@ Cat.prototype = new Animal();
 var cat = new Cat();
 ```
 * 寄生组合继承；
-```
+```javascript
 // 4、寄生组合继承
 function Cat(name){
     Animal.call(this);
@@ -252,23 +253,23 @@ function Cat(name){
 var cat = new Cat();
 ```
 * class继承，开发中推荐使用的方式。
-```
+```javascript
 // 5、class继承
 ```
 ### JS创建对象的几种方式？
 * 通过Object构造函数创建；
-```
+```javascript
 var Person = new Object();
 ```
 * 使用对象字面量的方式创建（对象字面量是对象定义的一种简写形式）；
-```
+```javascript
 var Person = {
     name: 'Tom';
     age: 18;
 }
 ```
 * 使用工厂模式创建；
-```
+```javascript
 function createPerson(name, age, sex){
     var obj = new Object();
     obj.name = name;
@@ -279,7 +280,7 @@ function createPerson(name, age, sex){
 var person = createPerson('Tom', 18, 'man');
 ```
 * 使用构造函数创建；
-```
+```javascript
 function Person(name, age, sex){
     this.name = name;
     this.age = age;
@@ -288,7 +289,7 @@ function Person(name, age, sex){
 var person = new Person('Tom', 18, 'man');
 ```
 * 使用原型对象创建
-```
+```javascript
 function Person(){}
 Person.prototype.name = 'Tom';
 Person.prototype.age = 18;
@@ -296,7 +297,7 @@ Person.prototype.sex = 'man';
 var person = new Person();
 ```
 * 组合使用构造函数和原型创建；
-```
+```javascript
 function Person(name, age, sex){
     this.name = name;
     this.age = age;
@@ -311,20 +312,20 @@ var person = new Person('Tom', 18, 'man');
 ### new操作符具体干了什么？
 new操作可以分为以下4个步骤：
 * 创建一个空对象； 
-```
+```javascript
 // 以var p = new Person()为例
 const o = new Object();
 ```
 * 将空对象的__proto__指向构造函数的prototype； 
-```
+```javascript
 o.__proto__ = Person.prototype;
 ```
 * 将构造函数的this指向空对象，执行构造函数；   
-```
+```javascript
 var res = Person.call(o);
 ```
 * 判断构造函数的返回值类型，返回新对象；   
-```
+```javascript
 return typeof res === 'object' ? res : o;
 ```
 
@@ -352,7 +353,7 @@ JS加载方式分为：
 只有异步操作的结果可以决定当前是哪一种状态，而且一旦状态改变就不会再变，即Promise对象状态只能由pending变成fulfilled，或由pending变成rejected；
 * new Promise在实例化过程中执行的代码是同步进行的，then中的回调才是异步执行的（所有会进入异步的都是指事件回调中的那部分代码）。
 
-```
+```javascript
 // 基础用法
 const p1 = new Promise(function(resolve, reject){
     if(//异步操作成功){
@@ -372,12 +373,12 @@ p1.then(
 
 Promise对象的几个重要方法：
 * Promise.all()，方法接收一个数组作为参数，p1、p2、p3都是Promise实例，p的状态要变成fulfilled，只有p1、p2、p3的状态都变成fulfilled，否则p的状态就变成rejected（类似于电路中的串联）；
-```
+```javascript
 // 示例
 const p = Promise.all([p1, p2, p3]);
 ```
 * Promise.race()，方法也接收一个数组作为参数，p1、p2、p3中哪个状态先发生改变，无论成功或失败，p的状态也会跟着它改变；
-```
+```javascript
 // 示例
 const p = Promise.all([p1, p2, p3]);
 ```
@@ -402,7 +403,7 @@ const p = Promise.all([p1, p2, p3]);
 ### JS事件委托机制？
 应用场景：很多DOM节点都需要监听的情况，如果给每个DOM节点都绑定监听函数，对性能会有极大影响，可以利用事件委托来解决这一问题。<br>
 事件委托：利用事件冒泡的机制，委托父节点代为执行事件。
-```
+```javascript
 // 示例（为每个子节点li添加点击事件）
 <ul id="ul">
     <li>1</li>
@@ -438,18 +439,18 @@ window.onload = function(){
 ### JS事件绑定的几种方式？
 JS中三种常用的绑定事件的方法：
 * 在DOM元素中直接绑定，例如：
-```
+```javascript
 <input onclick="" type="button" />
 ```
 * 在JavaScript代码中绑定，例如：
-```
+```javascript
 <input id="input" type="button" />
 <script type="text/javascript">
     document.getElementById("input").onclick = function(){}
 </script>
 ```
 * 绑定事件监听函数，addEventListener()或attachEvent()，语法：
-```
+```javascript
 elementObject.addEventListener(eventName, handle, useCapture);  //参数useCapture指是否使用事件捕获，默认为false
 elementObject.attachEvent(eventName, handle);
 ```
@@ -473,7 +474,7 @@ Set、Map、WeakSet、WeakMap是ES6新增的数据结构。
 ### 防抖与节流？
 * 应用场景：对于短时间内连续触发的事件，例如scroll、mousemove等，不希望事件连续触发的过程中频繁地执行函数。
 * 防抖：触发事件后在某个时间期限后，执行函数，如果在时间期限内又触发了事件，则会重新计时。
-```
+```javascript
 /**
 *   fn 需要防抖的函数
 *   delay 防抖期限值
@@ -491,7 +492,7 @@ function debounce(fn, delay){
 
 如果在时间期限内，不断触发事件，采用防抖的方法将会永远无法执行函数，因此需要新的方案。
 * 节流：函数在执行一次后，该函数在指定的时间期限内将失效，直到过了这段时间才重新生效。
-```
+```javascript
 /**
 *   fn 需要防抖的函数
 *   delay 防抖期限值
@@ -514,7 +515,7 @@ function throttle(fn, delay){
 
 ### 函数柯里化？
 函数柯里化就是只传递给函数一部分参数来调用它，让它返回一个函数去处理剩下的参数。示例：
-```
+```javascript
 // 普通的add函数
 function add(x, y){
     return x + y;
@@ -531,7 +532,7 @@ function curryingAdd(x){
 * 参数复用，减少代码冗余，增加可读性；
 * 延迟运行，JS种bind的实现机制就是柯里化。
 柯里化的实现方式：
-```
+```javascript
 function curry(fn, curArgs){
     return function(){
         let args = [].slice.call(arguments);
@@ -588,6 +589,71 @@ JS通过事件循环（Event Loop）来实现异步，过程如下图所示：<b
 
 微任务和宏任务的执行过程如下图所示：<br>
 <img src="./assets/微任务与宏任务.png" style="width:200px; margin:0 auto">
+
+### 正则表达式总结
+1. 正则声明方式
+* 构造函数申明：通过RegExp构造函数声明一个正则表达式对象，第一个参数是正则内容，第二个参数是修饰符。修饰符有6个：<br>
+（1）i，表示忽略大小写匹配；<br>
+（2）g，表示全局匹配，即匹配到一个后继续匹配，直到结束；<br>
+（3）m，多行匹配，即遇到换行仍然继续匹配，直到结束；<br>
+（4）s，表示允许 . 匹配换行符；<br>
+（5）u，表示使用 Unicode 码的模式进行匹配；<br>
+（6）y，表示“粘性”搜索，匹配从目标字符串的当前位置开始。<br>
+6个修饰符既可以单独使用，也可以按任意顺序一起使用。
+```javascript
+// 例如
+var reg = new RegExp('\w', 'gi');
+```
+* 字面量方式：最常见的一种声明方式，两个斜线内为正则内容，后面可以跟修饰符。
+```javascript
+// 例如
+var reg = /\w/gi;
+```
+2. 正则表达式相关符号
+* 方括号 [ ] ：用于查找方括号内任意字符；
+```javascript
+// 例如
+[0-9]   //匹配单个数字
+[a-z]   //匹配单个小写字符
+```
+* 大括号 { } ：
+* 括号 ( ) ：
+* ^ ：匹配输入的开始，^ 在 [ ] 内开始位置时表示匹配不在 [ ] 内的任意字符；
+* $ ：匹配输入的结束；
+* \* ：匹配前一个表达式 0 次或多次，等价于 {0, }；
+* \+ ：匹配前一个表达式 1 次或多次，等价于 {1, }；
+* \? ：匹配前一个表达式 0 次或 1 次，等价于 {0, 1}；
+* . ：匹配任意单个字符，除了换行和结束符；
+* \w ：匹配任意单个单词字符（数字、字母、下划线），等价于 [A-Za-z0-9_] ；
+* \W ：匹配任意单个非单词字符，与 \w 作用相反，等价于 [^A-Za-z0-9_] ；
+* \d ：匹配单个数字，等价于 [0-9] ；
+* \D ：匹配单个非数字，与 \d 作用相反，等价于 [^0-9] ；
+* \s ：匹配单个空白字符（\n，\f，\r，\t，\v）；
+* \S ：匹配单个非空白字符，与 \s 作用相反；
+* \b ：匹配单词边界，连续的数字、字母或下划线组成的字符串是一个单词；
+* \B ：匹配非单词边界；
+* \0 ：匹配 NULL 字符；
+* \n ：匹配换行符；
+* \f ：匹配换页符；
+* \r ：匹配回车符；
+* \t ：匹配制表符，tab对应的字符；
+* \v ：匹配垂直制表符；
+3. 正则表达式相关方法
+* RegExp对象相关方法：<br>
+（1）test：判断是否匹配，返回true/false；<br>
+（2）exec：返回匹配的结果，返回数组/null；
+* String对象相关方法：<br>
+（1）match：返回匹配的结果，非全局匹配时与exec返回结果一致，全局匹配时一次性返回所有匹配结果，返回数组/null；<br>
+（2）replace：将字符串中根据正则表达式匹配到的子串替换成其它子串，返回替换后的字符串；<br>
+（3）search：查找第一次匹配子串的位置，返回索引，未找到就返回 -1 ；<br>
+（4）split：将字符串根据规则拆分为数组，返回数组。
+4. 常见的正则表达式使用案例
+* 手机号匹配：以1开头，第二位为3、5、7、8，且长度为11的数字组合；
+```javascript
+var reg = /^1[3578]\d{9}$/;
+```
+* 邮箱匹配
+
 
 ## HTML
 ### HTML行内元素和块级元素的区别？
@@ -731,7 +797,7 @@ position属性的常用取值有：static、fixed、absolute、relative。
 ### 两栏布局的原理和实现方法？
 两栏布局：左侧栏定宽，右侧栏自适应。实现方式：
 * float + margin；
-```
+```javascript
 // HTML代码
 <div class="left"></div>
 <div class="right"></div>
@@ -741,7 +807,7 @@ position属性的常用取值有：static、fixed、absolute、relative。
 圣杯布局解决的问题：中间宽度自适应、两边定宽的三栏布局，且中间栏要放在文档流前面优先渲染。
 
 原理：使用浮动、相对定位和负边距。
-```
+```javascript
 // HTML代码
 <div class="content">
     <div class="center col"></div>
@@ -806,7 +872,7 @@ HTML中的style样式>内联样式>外部样式>用户设置>浏览器默认样�
 
 ### 数组扁平化
 将一个多维数组变为一个一维数组，例如：[1, 2, [3, [4, 5]]] --> [1, 2, 3, 4, 5]。
-```
+```javascript
 // 1.递归
 function flatten(arr){
     var res = [];
