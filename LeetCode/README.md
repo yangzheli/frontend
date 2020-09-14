@@ -7,7 +7,7 @@
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 
 1. 两数之和
-* 问题描述：给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那两个整数，并返回他们的数组下标。<br>
+* 题目描述：给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那两个整数，并返回他们的数组下标。<br>
 你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。
 ```javascript
 // Map
@@ -26,7 +26,7 @@ var twoSum = function (nums, target) {
 ```
 
 2. 两数相加
-* 问题描述：给出两个非空的链表用来表示两个非负的整数。其中，它们各自的位数是按照逆序的方式存储的，并且它们的每个节点只能存储一位数字。<br>
+* 题目描述：给出两个非空的链表用来表示两个非负的整数。其中，它们各自的位数是按照逆序的方式存储的，并且它们的每个节点只能存储一位数字。<br>
 如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。<br>
 您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
 ```javascript
@@ -58,7 +58,7 @@ var addTwoNumbers = function (l1, l2) {
 4. 寻找两个正序数组的中位数
 
 5. 最长回文子串
-* 问题描述：给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
+* 题目描述：给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
 ```javascript
 // 中心扩散法
 var longestPalindrome = function (s) {
@@ -88,7 +88,7 @@ var expand = function (s, i, j) {
 6. Z 字形变换
 
 7. 整数反转
-* 问题描述：给出一个 32 位的有符号整数，你需要将这个整数中每位上的数字进行反转。
+* 题目描述：给出一个 32 位的有符号整数，你需要将这个整数中每位上的数字进行反转。
 ```javascript
 var reverse = function (x) {
     let s = x < 0 ? false : true;
@@ -213,5 +213,105 @@ var romanToInt = function (s) {
         }
     }
     return res;
+};
+```
+
+14. 最长公共前缀
+* 题目描述：编写一个函数来查找字符串数组中的最长公共前缀。<br>
+如果不存在公共前缀，返回空字符串 ""。
+```javascript
+// 分治法
+var longestCommonPrefix = function (strs) {
+    if (strs.length === 0) {
+        return "";
+    }
+    return divide(strs, 0, strs.length - 1);
+};
+
+var divide = function longestCommonPrefix(strs, l, r) {
+    if (l === r) {
+        return strs[l];
+    }
+    let mid = l + Math.floor((r - l) / 2);
+    let left = divide(strs, l, mid);
+    let right = divide(strs, mid + 1, r);
+    return commonPrefix(left, right);
+}
+
+// 两个单词的公共前缀
+var commonPrefix = function (left, right) {
+    let index = 0;
+    while (index < left.length && index < right.length) {
+        if (left.charAt(index) !== right.charAt(index)) {
+            return left.substring(0, index);
+        }
+        index++;
+    }
+    return left.substring(0, index);
+}
+```
+
+15. 三数之和
+* 题目描述：给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。<br>
+注意：答案中不可以包含重复的三元组。
+```javascript
+```
+
+16. 最接近的三数之和
+
+17. 电话号码的字母组合
+* 题目描述：给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。<br>
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+```javascript
+// 递归
+var map = { '2': 'abc', '3': 'def', '4': 'ghi', '5': 'jkl', '6': 'mno', '7': 'pqrs', '8': 'tuv', '9': 'wxyz' };
+
+var letterCombinations = function (digits) {
+    if (digits.length === 0) {
+        return [];
+    }
+    return recurse(digits, [], 0);
+};
+
+var recurse = function (digits, res, index) {
+    if (index === digits.length - 1) {
+        return map[digits[index]].split('');
+    }
+    let arr = recurse(digits, res, index + 1);
+    let str = map[digits[index]];
+    for (let i = 0; i < str.length; i++) {
+        let newArr = [];
+        for (let j = 0; j < arr.length; j++) {
+            newArr.push(str.charAt(i) + arr[j]);
+        }
+        res = res.concat(newArr);
+    }
+    return res;
+}
+```
+
+18. 四数之和
+
+19. 删除链表的倒数第N个节点
+* 题目描述：给定一个链表，删除链表的倒数第 n 个节点，并且返回链表的头结点。
+```javascript
+// 1.两趟遍历
+var removeNthFromEnd = function (head, n) {
+    let dummy = new ListNode(0);  // 哑节点
+    dummy.next = head;
+    let p = dummy;
+    let len = 0;
+    while (p != null) {
+        p = p.next;
+        len++;
+    }
+    len = len - n;
+    p = dummy;
+    while (len > 1) {
+        p = p.next;
+        len--;
+    }
+    p.next = p.next.next;
+    return dummy.next;
 };
 ```
