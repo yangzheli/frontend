@@ -326,6 +326,40 @@ var commonPrefix = function (left, right) {
 * 题目描述：给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。<br>
 注意：答案中不可以包含重复的三元组。
 ```javascript
+// O(n^2)
+var threeSum = function (nums) {
+    let res = [];
+    nums.sort(function (a, b) {
+        return a - b;
+    });
+    for (let i = 0; i < nums.length; i++) {
+        if (nums[i] > 0) {  // 三个大于0的数相加和一定大于0
+            break;
+        }
+        if (i > 0 && nums[i] === nums[i - 1]) { // 去重
+            continue;
+        }
+        let left = i + 1, right = nums.length - 1, target = -nums[i];
+        while (left < right) {
+            if (nums[left] + nums[right] === target) {
+                res.push([nums[i], nums[left], nums[right]]);
+                left++;
+                right--;
+                while (left < right && nums[left] === nums[left - 1]) {
+                    left++;
+                }
+                while (left < right && nums[right] === nums[right + 1]) {
+                    right--;
+                }
+            } else if (nums[left] + nums[right] < target) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+    }
+    return res;
+}
 ```
 
 16. 最接近的三数之和
