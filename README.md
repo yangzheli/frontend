@@ -2,7 +2,7 @@
 [JS](#JS)
 * [JS数据类型有哪些？](#JS数据类型有哪些)
 * [Null和Undefined的差异？](#Null和Undefined的差异)
-* [var、let和const关键字的区别？](#var、let和const关键字的区别)
+* [var、let和const关键字的区别？](#var,let和const关键字的区别)
 * [为什么var可以重复声明？](#为什么var可以重复声明)
 * [JS中什么是变量提升？什么是暂时性死区？](#JS中什么是变量提升？什么是暂时性死区)
 * [深拷贝和浅拷贝的区别？](#深拷贝和浅拷贝的区别)
