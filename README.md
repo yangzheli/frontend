@@ -8,7 +8,7 @@
 * [深拷贝和浅拷贝的区别？](#深拷贝和浅拷贝的区别)
 * [什么是闭包？](#什么是闭包)
 * [typeof和instanceof有什么区别？](#typeof和instanceof有什么区别)
-* [什么是原型、原型链？](#什么是原型原型链？)
+* [什么是原型、原型链？](#什么是原型原型链)
 * [如何正确判断this关键字的指向？](#如何正确判断this关键字的指向)
 * [JS继承的几种实现方式？](#JS继承的几种实现方式)
 * [JS创建对象的几种方式？](#JS创建对象的几种方式)
@@ -21,7 +21,7 @@
 * [JS事件委托机制？](#JS事件委托机制)
 * [JS事件绑定的几种方式？](#JS事件绑定的几种方式)
 * [Set、Map、WeakSet、WeakMap的区别？](#SetMapWeakSetWeakMap的区别)
-* [谈谈你对ES6的了解（ES6的新特性）？](#谈谈你对ES6的了解)
+* [谈谈你对ES6的了解（ES6的新特性）？](#谈谈你对ES6的了解ES6的新特性)
 * [防抖与节流？](#防抖与节流)
 * [函数柯里化？](#函数柯里化)
 * [什么是window对象，什么是document对象？](#什么是window对象什么是document对象)
@@ -43,7 +43,7 @@
 [HTTP](#HTTP)
 * [平时遇到跨域问题都用什么解决方案？](#平时遇到跨域问题都用什么解决方案)
 * [从输入URL到展示的过程？](#从输入URL到展示的过程)
-* [TCP三次握手？](#TCP三次握手)
+* [TCP三次握手与四次挥手](#TCP三次握手与四次挥手)
 * [HTTP和HTTPS协议的区别？](#HTTP和HTTPS协议的区别)
 * [常见状态码？](#常见状态码)
 * [get和post的区别？](#get和post的区别)
@@ -60,7 +60,7 @@
 * [Vue路由的实现原理？](#Vue路由的实现原理)
 
 [CSS](#CSS)
-* [页面导入样式时，使用link和@import的区别？](#页面导入样式时使用link和@import的区别)
+* [页面导入样式时，使用link和@import的区别？](#页面导入样式时使用link和import的区别)
 * [伪类和伪元素的区别？](#伪类和伪元素的区别)
 * [CSS中position属性有哪些取值，它们的行为是什么？](#CSS中position属性有哪些取值它们的行为是什么)
 * [CSS中display属性有哪些取值，它们的行为是什么？](#CSS中display属性有哪些取值它们的行为是什么)
@@ -724,7 +724,12 @@ DNS查询的两种方式：递归查询和迭代查询；
 * 浏览器根据响应报文对页面进行渲染；
 * 断开TCP连接。
 
-### TCP三次握手？
+### TCP三次握手与四次挥手？
+三次握手即TCP连接的建立，具体过程如下：
+* xxx
+
+四次挥手即TCP连接的释放，具体过程如下：
+* xxx
 
 ### HTTP和HTTPS协议的区别？
 
@@ -906,8 +911,36 @@ function flatten(arr){
 
 ### 相交链表
 找出两个单链表相交的起始节点。
-```
+```javascript
 // 注意：两个单链表相交不会出现X型交叉，因为单链表每个节点只有一个next指针域
+// 如果链表结构中没有循环
+// 1.遍历
+var getIntersectionNode = function (headA, headB) {
+    let p = headA, q = headB;
+    let arrA = [], arrB = [];
+    while (p != null) {
+        arrA.push(p);
+        p = p.next;
+    }
+    while (q != null) {
+        arrB.push(q);
+        q = q.next;
+    }
+    let i = arrA.length - 1, j = arrB.length - 1;
+    while (i >= 0 && j >= 0) {
+        if (arrA[i] !== arrB[j]) {
+            return i === arrA.length - 1 ? null : arrA[i + 1];
+        } else {
+            i--;
+            j--;
+        }
+    }
+    return i < 0 ? arrA[0] : arrB[0];
+};
+
+// 2.
+
+// 如果链表结构中有循环
 ```
 
 ### [LeetCode](/LeetCode/README.md)

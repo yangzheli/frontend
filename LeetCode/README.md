@@ -458,3 +458,160 @@ var isValid = function (s) {
     return arr.length === 0;
 };
 ```
+
+21. 合并两个有序链表
+* 题目描述：将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
+```javascript
+// 双指针
+var mergeTwoLists = function (l1, l2) {
+    let l3 = new ListNode(0); // 哑节点
+    let p = l1, q = l2, k = l3;
+    while (p != null && q != null) {
+        if (p.val < q.val) {
+            k.next = p;
+            p = p.next;
+        } else {
+            k.next = q;
+            q = q.next;
+        }
+        k = k.next;
+    }
+    if (p != null) {
+        k.next = p;
+    }
+    if (q != null) {
+        k.next = q;
+    }
+    return l3.next;
+};
+```
+
+22. 括号生成
+* 题目描述：数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且有效的括号组合。
+```javascript
+// 回溯 + 剪枝
+var generateParenthesis = function (n) {
+    let res = [];
+    dfs('', res, n, n);
+    return res;
+};
+
+var dfs = function (curStr, res, left, right) {
+    if (left === 0 && right === 0) {
+        res.push(curStr);
+        return;
+    }
+    // 剪枝
+    if (left > right) {
+        return;
+    }
+    if (left > 0) {
+        dfs(curStr + '(', res, left - 1, right);
+    }
+    if (right > 0) {
+        dfs(curStr + ')', res, left, right - 1);
+    }
+}
+```
+
+23. 合并K个升序链表
+* 题目描述：合并 k 个排序链表，返回合并后的排序链表。请分析和描述算法的复杂度。
+```javascript
+// 分治法 O(k*n*logk)-k为链表数量 n为链表平均长度
+var mergeKLists = function (lists) {
+    if (lists.length === 0) {
+        return null;
+    }
+    return merge(lists, 0, lists.length - 1);
+};
+
+var merge = function (lists, l, r) {
+    if (l === r) {
+        return lists[l];
+    }
+    let mid = l + Math.floor((r - l) / 2);
+    let left = merge(lists, l, mid), right = merge(lists, mid + 1, r);
+    return mergeTwoLists(left, right);
+}
+
+// 合并2个升序链表
+var mergeTwoLists = function (l1, l2) {
+    let l3 = new ListNode(0); // 哑节点
+    let k = l3;
+    while (l1 != null && l2 != null) {
+        if (l1.val < l2.val) {
+            k.next = l1;
+            l1 = l1.next;
+        } else {
+            k.next = l2;
+            l2 = l2.next;
+        }
+        k = k.next;
+    }
+    if (l1 != null) {
+        k.next = l1;
+    }
+    if (l2 != null) {
+        k.next = l2;
+    }
+    return l3.next;
+};
+```
+
+24. 两两交换链表中的节点
+* 题目描述：给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。<br>
+你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+```javascript
+// 递归
+var swapPairs = function (head) {
+    if (head === null || head.next === null) {
+        return head;
+    }
+    let node = head.next;
+    head.next = swapPairs(node.next);
+    node.next = head;
+    return node;
+};
+```
+
+25. K 个一组翻转链表
+* 题目描述：给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。<br>
+k 是一个正整数，它的值小于或等于链表的长度。<br>
+如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+```javascript
+// 1.迭代 + 递归
+var reverseKGroup = function (head, k) {
+    let pre = null, cur = head;
+    let n = k;
+    // 迭代实现翻转链表前K个节点
+    while (n > 0 && cur != null) {
+        let node = cur.next;
+        cur.next = pre;
+        pre = cur;
+        cur = node;
+        n--;
+    }
+    if (n > 0) {
+        // 将翻转的链表翻转回来，使其保持原有顺序
+        return reverseKNode(pre);
+    } else {
+        // 递归翻转后续链表
+        head.next = reverseKGroup(cur, k);
+        return pre;
+    }
+};
+
+// 翻转链表
+var reverseKNode = function (head) {
+    if (head === null || head.next === null) {
+        return head;
+    }
+    let node = reverseKNode(head.next);
+    head.next.next = head;
+    // 最后一个节点的next置为null
+    head.next = null;
+    return node;
+}
+
+// 2.栈
+```
