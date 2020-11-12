@@ -278,6 +278,31 @@ function merge_sort(arr) {
   // 合并两个排好序的数组
   return merge(left, right);
 }
+
+function merge(left, right) {
+  let res = [];
+  // 双指针
+  let i = 0,
+    j = 0;
+
+  while (i < left.length && j < right.length) {
+    if (left[i] < right[j]) {
+      res.push(left[i++]);
+    } else {
+      res.push(right[j++]);
+    }
+  }
+
+  while (i < left.length) {
+    res.push(left[i++]);
+  }
+
+  while (j < right.length) {
+    res.push(right[j++]);
+  }
+
+  return res;
+}
 ```
 
 优化：对小规模子数组使用插入排序
