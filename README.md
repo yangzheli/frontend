@@ -1113,6 +1113,6 @@ var getIntersectionNode = function(headA, headB) {
 // 如果链表结构中有循环
 ```
 
-### [LeetCode](/LeetCode/README.md)
+### [LeetCode](/leetCode/README.md)
 
-## [工作总结](/Summary/README.md)
+## [工作总结](/summary/README.md)
