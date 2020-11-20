@@ -264,7 +264,41 @@ function selection_sort(arr) {
 - 堆排序
 
 ```javascript
-function heap_sort(arr) {}
+// 每个节点的值大于或等于左右孩子节点的值，为大根堆；每个节点的值小于或等于左右孩子节点的值，为小根堆；
+// 一般升序采用大根堆，降序采用小根堆
+function heap_sort(arr) {
+  let N = arr.length;
+  for (let k = Math.floor(N / 2) - 1; k >= 0; k--) {
+    // 最后一个非叶子节点索引为 N/2-1
+    // 构建大根堆
+    sink(arr, k, N);
+  }
+
+  // 将堆顶元素与数组末尾元素进行交换，再重新调整堆中元素、交换位置，直到整个数组有序
+  while (N > 1) {
+    swap(arr, 0, --N); // 交换
+    sink(arr, 0, N);
+  }
+
+  return arr;
+}
+
+function sink(arr, k, N) {
+  let left = 2 * k + 1; // 2*k+1是k的左子树，因为根节点索引是0(而不是1)
+  while (left < N) {
+    if (left + 1 < N && arr[left] < arr[left + 1]) {
+      // 2*k+2是k的右子树
+      left++;
+    }
+    if (arr[k] >= arr[left]) {
+      // 不用交换
+      break;
+    }
+    swap(arr, k, left);
+    k = left;
+    left = left * 2 + 1;
+  }
+}
 ```
 
 - 归并排序
