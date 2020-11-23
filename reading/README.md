@@ -87,7 +87,20 @@ let s = new Symbol(); // TypeError: Symbol is not a constructor
 
 - Object 类型，Object 是所有对象的基类。
 
-9. 原始值与引用值
+9. ECMAScript 语句
+
+- for-in 语句:一种严格的迭代语句，用于枚举对象中的非符号键属性。由于 ECMAScript 中对象的属性是无序的，因此 for-in 语句不能保证返回对象属性的顺序。
+
+- for-of 语句：一种严格的迭代语句，用于遍历可迭代对象的元素。for-of 循环会按照可迭代对象的 next()方法产生值的顺序迭代元素。ES2018 对 for-of 语句进行了扩展，增加了 for-await-of 循环，以支持生成期约（promise）的异步可迭代对象。示例：
+
+```javascript
+// 这里控制语句中的const不是必需的，但为了确保这个局部变量不被修改，推荐使用const
+for (const el of [2, 4, 6, 8]) {
+  console.log(el);
+}
+```
+
+10. 原始值与引用值
 
 - 原始值保存在栈内存上，引用值保存在堆内存上；
 - 保存原始值的变量是按值访问的，保存引用值的变量是按引用访问的；
@@ -115,7 +128,7 @@ console.log(obj2.name); // "Tom"
 
 - ECMAScript 所有函数的参数都是按值传递的，ECMAScript 中函数的参数就是局部变量。
 
-10. 变量作用域
+11. 变量作用域
 
 - 搜索标识符表示什么过程如下：搜索开始于作用域前端，如果在局部上下文找到该标识符，则搜索停止，变量确定；如果没有找到变量名，则继续沿作用域链搜索。如果搜索到全局上下文，仍然没有找到该标识符，则说明该变量未声明。例如：
 
@@ -132,7 +145,7 @@ function getColor() {
 console.log(getColor()); // "green"
 ```
 
-11. 垃圾回收与内存管理
+12. 垃圾回收与内存管理
 
 - JavaScript 是使用垃圾回收的语言，垃圾收集器会定时、周期性地找出不再继续使用的变量，然后释放其占用的内存。标识无用变量的策略通常有两种：<br>
   （1）标记清除（最常用）：垃圾收集器会给内存中所有变量都加上标识，然后去掉环境中的变量和被环境中变量引用的变量的标识，之后仍然被加上标识的变量就会被垃圾收集器回收所占用的内存。<br>
@@ -140,7 +153,7 @@ console.log(getColor()); // "green"
 
 - 将内存占用量保持在一个较小的值可以让页面性能更好，优化内存占用的最佳手段就是保证在执行代码时只保存必要的数据。如果数据不再必要，就解除引用，比如把它设置为 null；
 
-12. 原始值包装类型
+13. 原始值包装类型
 
 - ECMAScript 提供了 3 种特殊的引用类型：Boolean、Number 和 String。
 
@@ -164,13 +177,13 @@ let obj = new Number(value); // 构造函数，但不推荐显式创建原始值
 console.log(typeof obj); // "object"
 ```
 
-13. 内置对象
+14. 内置对象
 
 - 除了 Object、Array、Function 和原始值包装对象，ECMAScript 还定义了另外 2 种内置对象：Global 和 Math；
 - Global：
 - Math：
 
-14. 引用类型
+15. 引用类型
 
 - Object
 - Array：数组中每个槽位可以存储任意类型的数据，即可以创建一个数组，它的第一个元素是字符串，第二个元素是数值，第三个元素是对象。ECMAScript 数组是动态大小的，会随着数据添加而自动增长；
@@ -181,7 +194,7 @@ console.log(typeof obj); // "object"
 - WeakSet（ES6 新增）：弱集合，WeakSet 中的 “weak” 描述的是 JavaScript 垃圾回收程序对待弱集合中值的方式。弱集合中的值只能是 Object 或继承自 Object 的类型，使用非对象设置键会抛出 TypeError。WeakSet 中的值不属于正式的引用，不会阻止垃圾回收。WeakSet 无法对值进行迭代。
 - Function
 
-15. 迭代器
+16. 迭代器
 
 - ES5 新增 Array.prototype.forEach()进行迭代，但 forEach()方法无法标识迭代何时终止；
 
@@ -201,7 +214,7 @@ console.log(str[Symbol.iterator]()); // StringIterator {}
 
 - 迭代器使用 next()方法在可迭代对象中遍历数据，成功返回的迭代器对象 IteratorResult 包含两个属性：done 和 value。done 是布尔值，表示是否还可以再次调用 next()取下一个值，取 true 是表示“耗尽”，value 包含迭代对象的下一个值。
 
-16. 生成器
+17. 生成器
 
 - ES6 新增的结构，可以在一个函数块内暂停和恢复代码的执行；
 
@@ -236,7 +249,7 @@ class Foo {
 
 - yield 关键字只能在生成器函数内部使用，出现在嵌套的非生成器函数中会抛出语法错误；
 
-17. 对象
+18. 对象
 
 - ECMAScript 将对象定义为一组属性的无序集合，对象的每个属性和方法都由一个名称标识，这个名称映射到一个值，可以把 ECMAScript 中的对象想象为一张散列表，其中内容就是名/值对，值可以是数据或函数；
 
@@ -276,7 +289,272 @@ console.log(res === dest); // true
 
 - 对象相等判定：ES6 之前使用 === 操作符进行判断，但有些特殊情况 === 无能为力，因此，ES6 新增 Object.is()方法来判定对象是否相等。
 
-18. 扩展操作符
+- 增强的对象语法
+
+- 对象解构：涉及多个属性的解构赋值是一个输出无关的顺序化操作，如果一个解构表达式涉及多个赋值，开始的赋值成功而后面的赋值出错，则整个解构赋值只会完成一部分。
+
+19. 创建对象
+
+- Object 构造函数；
+
+- 对象字面量；
+
+- 工厂模式：按照特定接口创建对象的方式，虽然可以解决创建多个类似对象的问题，但没有解决对象标识问题（即新创建的对象是什么类型）。例如：
+
+```javascript
+function createPerson(name, age, job) {
+  let o = new Object();
+  o.name = name;
+  o.age = age;
+  o.job = job;
+  o.sayName = function() {
+    console.log(this.name);
+  };
+  return o;
+}
+
+let p1 = createPerson("Nicholas", 20, "Doctor");
+```
+
+- 构造函数模式：用于创建特定类型对象。例如：
+
+```javascript
+function Person(name, age, job) {
+  this.name = name;
+  this.age = age;
+  this.job = job;
+  this.sayName = function() {
+    console.log(this.name);
+  };
+}
+
+let p1 = new Person("Nicholas", 20, "Doctor");
+```
+
+Person() 构造函数与 createPerson() 工厂函数有如下区别：<br>
+（1）没有显示创建对象；<br>
+（2）属性和方法直接赋值给 this；<br>
+（3）函数没有 return。<br>
+同时构造函数名称的首字母都是大写的，非构造函数则以小写字母开头。
+
+使用 new 操作符调用构造函数会执行以下操作：<br>
+（1）在内存中创建一个新对象；<br>
+（2）新对象的[[Prototype]]特性被赋值为构造函数的 prototype 属性；<br>
+（3）构造函数内部的 this 被赋值为这个新对象（即 this 指向新对象）；<br>
+（4）执行构造函数内部的代码（给新对象添加属性）；<br>
+（5）如果构造函数返回非空对象，则返回该对象，否则返回刚创建的新对象。
+
+构造函数和普通函数唯一的区别就是调用方式不同，任何函数只要使用 new 操作符调用就是构造函数，而不使用 new 操作符调用的函数就是普通函数。前面定义的 Person()也可以像下面这样调用：
+
+```javascript
+// 作为函数调用
+Person("Greg", 25, "Engineer");
+window.sayName(); // "Greg"
+
+// 在另一个对象的作用域中调用
+let obj = new Object();
+Person.call(obj, "Jerry", 30, "Nurse");
+o.sayName(); // "Jerry"
+```
+
+在上面的例子中，没有使用 new 操作符调用 Person()，会将属性和方法添加到 window 对象。注意，在调用一个函数而没有明确设置 this 的情况（即没有作为对象的方法调用，也没有使用 call()/apply()调用），this 始终指向 Global 对象（在浏览器中就是 window 对象）。
+
+构造函数有一个问题就是：其中定义的方法会在每个实例上都创建一遍，而如果将方法定义在构造函数外部，那个函数实际上只能在一个对象上调用。可以通过原型模式来解决。
+
+- 原型模式：每个函数都会创建一个 prototype 属性，这个属性是一个对象，这个对象就是构造函数的原型，在它上面定义的方法和属性可以被对象实例共享。示例：
+
+```javascript
+function Person() {}
+
+Person.prototype.name = "Nicholas";
+Person.prototype.age = 20;
+Person.prototype.jog = "Doctor";
+Person.sayName = function() {
+  console.log(this.name);
+};
+
+let p1 = new Person(),
+  p2 = new Person();
+console.log(p1.sayName == p2.sayName); // true
+```
+
+20. 原型
+
+- 原型：实例与构造函数原型之间有直接的联系，但实例与构造函数之间没有。
+
+<img src="../assets/原型链.png" style="width:250px; margin:0 auto">
+
+- 原型层级：在通过对象访问属性时，会按照这个属性的名称进行搜索。搜索开始于对象实例本身。如果在这个实例上发现了给定的名称，则返回该名称对应的值。如果没有找到这个属性，就会沿着指针进入原型对象，然后在原型对象上找到属性后，再返回相应的值。<br>
+  hasOwnProperty()方法可以用于确定某个属性是在实例上还是原型对象上。
+
+- 其他原型语法：直接通过一个包含所有属性和方法的对象字面量来重写原型。示例：
+
+```javascript
+function Person() {}
+
+Person.prototype = {
+  name: "Nicholas",
+  age: 20,
+  job: "doctor",
+  sayName() {
+    console.log(this.name);
+  }
+};
+```
+
+这样重写之后，只有一个问题就是：Person.prototype 的 constructor 属性就不指向 Person 了。因为在创建函数时，也会创建它的 prototype 对象，同时会自动给这个原型的 constructor 属性赋值。上面的写法完全重写了默认的 prototype 对象，因此其 constructor 属性也指向了完全不同的新对象（Object 构造函数）。可以像下面一样在重写原型对象时专门设置一下它的值：
+
+```javascript
+function Person() {}
+
+Person.prototype = {
+  constructor: Person,
+  name: "Nicholas",
+  age: 20,
+  job: "doctor",
+  sayName() {
+    console.log(this.name);
+  }
+};
+```
+
+- 原生对象原型：是实现所有原生引用类型的模式，所有原生引用类型的构造函数（包括 Object、Array、String 等）都在原型上定义了实例方法。例如数组实例的 sort()方法就是在 Array.prototype 上定义的。虽然可以像修改自定义对象原型一样修改原生对象类型，但不推挤这样做，推荐的做法是创建一个自定义的类，继承原生类型。
+
+- 原型模式的问题：共享特性，由于原型上所有的属性是在实例间共享的，但一般来说，不同的实例应该有属于自己的属性副本，这就是实际开放中通常不单独使用原型模式的原因。
+
+21. 对象迭代
+
+- ES2017 新增了两个静态方法 Object.values()和 Object.entries()，用于将对象内容转化为序列化的、可迭代的格式，返回它们内容的数组。Object.values()返回对象值的数组，Object.entries()返回键/值对的数组（非字符串属性会被转换为字符串输出）。
+
+22. 继承
+
+- 很多面向对象语言都支持两种继承：接口继承和实现继承。接口继承只继承方法签名，实现继承继承实际的方法。由于 ECMAScript 中函数没有签名，因此接口继承在 ECMAScript 中是不可能的，实现继承是 ECMAScript 唯一支持的继承方式，而这主要通过原型链实现。实现继承的方式有：<br>
+  （1）原型链；
+
+23. 原型链
+
+- 原型链：每个构造函数都有一个原型对象，原型有一个 constructor 属性指向构造函数，而实例有一个内部指针指向原型。如果原型是另一个类型的实例，就意味着这个原型本身有一个内部指针指向另一个原型，相应地另一个原型也有一个指针指向另一个构造函数。这样就在实例和原型之间构成了一条原型链。示例：
+
+```javascript
+function SuperType() {}
+
+function SubType() {}
+
+// 实现继承
+SubType.prototype = new SuperType();
+```
+
+- 默认原型：默认情况下，所有引用类型都继承自 Object，这也是通过原型链实现的。任何函数的默认原型都是 Object 的一个实例，这也是自定义类型能够继承包括 toString()、valueOf()在内所有默认方法的原因。
+
+- 原型和继承关系：原型和实例的关系可以通过两种方式来确定，<br>
+  （1）使用 instanceof 操作符；<br>
+  （2）使用 isPrototypeOf()方法，原型链中每个原型都可以调用这个方法，例如：
+
+```javascript
+console.log(Object.isPrototypeOf(instance)); // true
+console.log(SuperType.isPrototypeOf(instance)); // true
+```
+
+- 关于方法：子类有时候需要覆盖父类的方法，或者增加父类没有的方法。这些方法必须在原型赋值之后再添加到原型上。示例：
+
+```javascript
+function SuperType() {
+  this.property = true;
+}
+
+SuperType.prototype.getSuperValue = function() {
+  return this.property;
+};
+
+function SubType() {
+  this.subProperty = false;
+}
+
+// 继承
+SubType.prototype = new SuperType();
+
+// 覆盖已有方法
+SubType.prototype.getSuperValue = function() {
+  return false;
+};
+
+// 新方法
+SubType.prototype.getSubValue = function() {
+  return this.subProperty;
+};
+```
+
+- 以对象字面量方式创建原型方法会破坏之前的原型链，因为这相当于重写了原型链。示例：
+
+```javascript
+function SuperType() {}
+
+SuperType.prototype.getSuperValue = function() {
+  return true;
+};
+
+
+function SubType() {}
+
+// 继承
+SubType.prototype = new SuperType();
+// 覆盖后的原型是Object的实例，不再是SuperType的实例，因此SubType与SuperType之间就没有关系了
+SubType.prototype={
+  getSubValue(){
+    return false;
+  }
+  otherMethod(){
+    return false;
+  }
+}
+
+let instance = new SubType();
+console.log(instance.getSuperValue());  // 报错！
+```
+
+- 原型链的问题：（1）共享特性，原型中的引用值会在所有实例间共享，这也是为什么属性通常会在构造函数中定义而不会定义在原型上的原因。<br>
+  （2）子类型在实例化时不能给父类型的构造函数传参。<br>
+  因此，原型链基本不会被单独使用。<br>
+  示例：
+
+```javascript
+function SuperType() {
+  this.colors = ["red", "blue", "white"];
+}
+
+function SubType() {}
+
+SubType.prototype = new SuperType();
+
+let instance1 = new SubType();
+instance1.colors.push("black");
+
+let instance2 = new SubType();
+console.log(instance2.colors); //"red", "blue", "white","black"
+```
+
+24. 盗用构造函数
+
+- 为解决原型包含引用值导致的继承问题，“盗用构造函数”的技术流行起来。思路：在子类构造函数中调用父类构造函数。因为函数是在特定上下文中执行代码的简单对象，所以可以使用 call()、apply()方法以新创建的对象为上下文执行构造函数。示例：
+
+```javascript
+function SuperType() {
+  this.colors = ["red", "green", "blue"];
+}
+
+function SubType() {
+  SuperType.call(this);
+}
+
+let instance1 = new SubType();
+instance1.colors.push("black");
+console.log(instance1.colors);
+
+let instance2 = new SubType();
+console.log(instance2.colors);
+```
+
+25. 扩展操作符
 
 ### 《工程数学线性代数 第六版》
 

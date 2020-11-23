@@ -225,9 +225,9 @@ function instace_of(A, B) {
 
 ### 什么是原型、原型链？
 
-- 每个对象都有一个原型对象，通过**proto**指针指向其原型对象，并从中继承方法和属性，同时原型对象也可能拥有原型，这样一层一层最终指向 null（原型链的终点，Object.prototype.**proto**指向 null）。这种关系链被称为原型链，通过原型链一个对象可以继承其它对象的方法和属性，是实现继承的主要方式。
+- 每个对象都有一个原型对象，通过 \_\_proto\_\_ 指针指向其原型对象，并从中继承方法和属性，同时原型对象也可能拥有原型，这样一层一层最终指向 null（原型链的终点，Object.prototype.\_\_proto\_\_指向 null）。这种关系链被称为原型链，通过原型链一个对象可以继承其它对象的方法和属性，是实现继承的主要方式。
 - 构造函数 Parent、原型 Parent.prototype 和实例 p 之间的关系如下图所示（p.**proto** === Parent.prototype;&nbsp;&nbsp;//true）。
-  （注：prototype 是构造函数的属性，**proto**是每个实例都有的属性，实例的**proto**与其构造函数的 prototype 指向同一个对象，即该实例的原型）
+  （注：prototype 是构造函数的属性，\_\_proto\_\_ 是每个实例都有的属性，实例的 \_\_proto\_\_ 与其构造函数的 prototype 指向同一个对象，即该实例的原型）
   <img src="./assets/原型链.png" style="width:250px; margin:0 auto">
 
 ### 如何正确判断 this 关键字的指向？
