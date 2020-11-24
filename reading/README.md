@@ -430,6 +430,8 @@ Person.prototype = {
 
 - 很多面向对象语言都支持两种继承：接口继承和实现继承。接口继承只继承方法签名，实现继承继承实际的方法。由于 ECMAScript 中函数没有签名，因此接口继承在 ECMAScript 中是不可能的，实现继承是 ECMAScript 唯一支持的继承方式，而这主要通过原型链实现。实现继承的方式有：<br>
   （1）原型链；
+  （2）盗用构造函数；
+  （3）组合继承；
 
 23. 原型链
 
@@ -554,7 +556,223 @@ let instance2 = new SubType();
 console.log(instance2.colors);
 ```
 
-25. 扩展操作符
+- 优点：可以在子类构造函数中向父类构造函数传递参数。示例：
+
+```javascript
+function SuperType(name) {
+  this.name = name;
+}
+
+function SubType() {
+  // 继承SuperType并传参
+  SuperType.call(this, "Nicholas");
+
+  this.age = 20;
+}
+```
+
+- 盗用构造函数的问题：必须在构造函数中定义方法，因此函数不能重用。而且子类也不能访问父类原型上定义的方法。因此，盗用构造函数基本上也不单独使用。
+
+25. 组合继承
+
+- 组合继承（伪经典继承）综合了原型链和盗用构造函数。思路：使用原型链继承原型上的属性和方法，而通过盗用构造函数继承实例属性。组合继承是 JavaScript 中使用最多的继承模式，示例：
+
+```javascript
+function SuperType(name) {
+  this.name = name;
+  this.colors = ["red", "green", "blue"];
+}
+SuperType.prototype.sayName = function() {
+  console.log(this.name);
+};
+
+function SubType(name, age) {
+  // 继承属性
+  SuperType.call(this, name);
+
+  this.age = age;
+}
+
+// 继承方法
+SubType.prototype = new SuperType();
+
+SubType.prototype.sayAge = function() {
+  console.log(this.age);
+};
+
+let instance1 = new SubType("Nicholas", 20);
+instance1.colors.push("white");
+console.log(instance1.colors);
+
+let instance2 = new SubType();
+console.log(instance2.colors);
+```
+
+26. 原型式继承
+
+- 通过下面的 object()方法对传入的对象执行浅复制。
+
+```javascript
+function object(o) {
+  function F() {}
+  F.prototpe = o;
+  return new F();
+}
+```
+
+- ES5 新增 Object.create()方法将原型式继承规范化，方法接收两个参数：作为新对象原型的对象，以及给新对象定义额外属性的对象（可选）。在只有一个参数时，Object.create()和上面的 object()方法效果相同。
+
+- 原型式继承属性中包含的引用值始终会在相关对象间共享。
+
+27. 寄生式继承
+
+- 寄生式继承背后思路类似于寄生构造函数和工厂模式，具体思路：创建一个实现继承的函数，以某种方式增强对象，然后返回这个对象。
+
+```javascript
+// object函数不是寄生式继承必需的，任何返回新对象的函数都能在这里使用
+function createAnother(original) {
+  let clone = object(original); // 通过调用object函数创建一个新对象
+  clone.sayHi = function() {
+    // 以某种方式增强这个对象
+    console.log("Hi");
+  };
+  return clone; // 返回这个对象
+}
+```
+
+使用示例：
+
+```javascript
+let person = {
+  name: "Nicholas",
+  friends: ["Nick", "Van"]
+};
+
+let anotherPerson = createAnother(person);
+anotherPerson.sayHi(); // "Hi"
+```
+
+- 缺点：与构造函数模式类似，寄生式继承给对象添加函数会导致函数难以重用。
+
+28. 寄生式组合继承
+
+- 寄生式组合继承：通过盗用构造函数继承属性，但使用混合式原型继承方法。
+
+```javascript
+function inheritPrototype(subType, superType) {
+  let prototype = object(superType.prototype); // 创建对象
+  prototype.constructor = subType; // 增强对象
+  subType.prototype = prototype; // 赋值对象
+}
+```
+
+使用实例：
+
+```javascript
+function SuperType(name) {
+  this.name = name;
+  this.colors = ["red", "green", "white"];
+}
+
+SuperType.prototype.sayName = function() {
+  console.log(this.name);
+};
+
+function SubType(name, age) {
+  SuperType.call(this, name);
+  this.age = age;
+}
+
+inheritPrototype(SubType, SuperType);
+SubType.prototype.sayAge = function() {
+  console.log(this.age);
+};
+```
+
+- 寄生式组合继承算是引用类型继承的最佳模式。
+
+29. 类
+
+- 前面通过只使用 ES5 的特性来模拟类似于类的行为，ES6 新引入的 class 关键字具有正式定义类的能力。类（class）是 ECMAScript 中新的基础性语法糖结构，实际上背后使用的仍然是原型和构造函数的概念。
+
+- 类的定义：与函数类型相似，定义类也主要有两种方式：类声明和类表达式。
+
+```javascript
+// 类声明
+class Person {}
+
+// 类表达式
+const Person = class {};
+```
+
+与函数表达式类似，类表达式在它们被求值前也不能引用。不过，与函数定义不同的是，虽然函数声明可以提升，但类定义不能。同时，函数受函数作用域限制，而类受块作用域限制。实例：
+
+```javascript
+console.log(FunctionExpression); // undefined
+var FunctionExpression = function() {};
+console.log(FunctionExpression); // ƒ () {}
+
+console.log(FunctionDeclaration); // FunctionDeclaration() {}
+
+function FunctionDeclaration() {}
+console.log(FunctionDeclaration); // FunctionDeclaration() {}
+
+console.log(ClassExpression); // undefined
+var ClassExpression = class {};
+console.log(ClassExpression); // class {}
+
+console.log(ClassDeclaration); // ReferenceError
+class ClassDeclaration {}
+console.log(ClassDeclaration); // class ClassDeclaration {}
+```
+
+- 类的构成：类可以包含构造函数方法、实例方法、获取函数、设置函数和静态类方法。但这些都不是必需的，空的类定义同样有效。
+
+- 类构造函数：constructor 关键字。使用 new 操作符创建类的新实例时，会调用这个方法。具体分为以下几步：<br>
+  （1）在内存中创建一个新对象；<br>
+  （2）这个新对象的[[Prototype]]指针被赋值为构造函数的 prototype 属性；<br>
+  （3）构造函数内部的 this 被赋值为这个新对象（即 this 指向新对象）；<br>
+  （4）执行构造函数内部的代码（给新对象添加属性）；<br>
+  （5）如果构造函数返回非空对象，则返回该对象；否则返回刚创建的新对象。
+
+```javascript
+class Person {
+  constructor(override) {
+    this.foo = "foo";
+    if (override) {
+      return {
+        bar: "bar"
+      };
+    }
+  }
+}
+
+let p1 = new Person(),
+  p2 = new Person(true);
+
+console.log(p1); // Person{foo:"foo"}
+console.log(p1 instanceof Person); // true
+
+console.log(p2); // Object{bar:"bar"}
+console.log(p2 instanceof Person); // false
+```
+
+- 类构造函数和构造函数的主要区别：调用类构造函数必须使用 new 操作符，而普通构造函数如果不适用 new 调用，那么就会以全局的 this（通常是 window）作为内部对象。
+
+```javascript
+function Person() {}
+
+class Animal {}
+
+// 把window作为this来创建实例
+let p = Person();
+
+let a = Animal(); // TypeError
+```
+
+- 类本身具有和普通构造函数一样的行为，
+
+30. 扩展操作符
 
 ### 《工程数学线性代数 第六版》
 
@@ -579,8 +797,8 @@ x_1=\frac{a_{11}b_2-b_1a_{21}}{a_{11}a_{22}-a_{12}a_{21}} \\
 $$
 
 使用行列式进行表示：
-$ D=\begin{vmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ \end{vmatrix}, 
-D_1=\begin{vmatrix} b_1 & a_{12} \\ b_2 & a_{22} \\ \end{vmatrix}, 
+$ D=\begin{vmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ \end{vmatrix},
+D_1=\begin{vmatrix} b_1 & a_{12} \\ b_2 & a_{22} \\ \end{vmatrix},
 D_2=\begin{vmatrix} a_{11} & b_1 \\ a_{21} & b_2 \\ \end{vmatrix}$
 
 则：
@@ -599,3 +817,7 @@ $ x_1=\frac{D_1}{D}, x_2=\frac{D_2}{D} $
   （6）把行列式的某一行（列）的各元素乘同一个数然后加到另一行（列）对应的元素上去，行列式不变。
 
 - 代数余子式
+
+```
+
+```
