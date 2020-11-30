@@ -836,6 +836,223 @@ let a = Animal(); // TypeError
 
 5. 整合异步脚本
 
+### 《JavaScript 设计模式与开发实践》
+
+1. 静态类型语言与动态类型语言
+
+- 编程语言按照数据类型可以分为两类：静态类型语言和动态类型语言。
+- 静态类型语言在编译时就已确定变量的类型，而动态类型语言的变量类型要到程序运行的时候，待变量被赋予某个值时后，才会具有某种类型。
+
+2. 多态
+
+- 多态：给不同的对象发送同一个消息时，这些对象会根据这个消息分别给出不同的反馈。
+- 示例：
+
+```javascript
+let makeSound = function(animal) {
+  if (animal instanceof Duck) {
+    console.log("嘎嘎嘎");
+  } else if (animal instanceof Chicken) {
+    console.log("咯咯咯");
+  }
+};
+
+let Duck = function() {};
+let Chicken = function() {};
+
+makeSound(new Duck()); //  "嘎嘎嘎"
+maekSound(new Chicken()); // "咯咯咯"
+```
+
+- 通过把不变的部分隔离出来，把可变的部分封装起来。让程序具有可扩展性，也符合开放-封闭原则。封装后的示例：
+
+```javascript
+let makeSound = function(animal) {
+  animal.sound();
+};
+
+let Duck = function() {};
+Duck.prototype.sound = function() {
+  console.log("嘎嘎嘎");
+};
+
+let Chicken = function() {};
+Chicken.prototype.sound = function() {
+  console.log("咯咯咯");
+};
+
+makeSound(new Duck()); //  "嘎嘎嘎"
+maekSound(new Chicken()); // "咯咯咯"
+```
+
+- 类型检查是表现出对象多态性之前绕不开的话题。以静态类型语言 Java 为例，可以通过使用继承，将对象向上转型，得到多态效果。而由于 JavaScript 是不必进行类型检查的动态语言，这就意味着 JavaScript 对象的多态性是与生俱来的。
+
+3. 封装
+
+- 封装：封装目的是将信息隐藏，广义的封装不仅包括封装数据和封装实现，还包括封装类型和封装变化。从设计模式的角度出发，封装更重要的层面体现为封装变化。
+
+- 封装变化：把程序中变化的部分封装好之后，剩下的即是稳定而可复用的部分。
+
+4. 原型模式
+
+- 原型模式是一种设计模式，更是一种编程范式。
+
+- 原型模式是用于创建对象的一种模式，原型模式是通过克隆来创建对象的。ES5 提供了 Object.create()方法用来克隆对象。
+
+- 要得到一个对象，不是通过实例化类，而是找到一个对象作为原型并克隆它。如果对象无法响应某个请求，它会把这个请求委托给它的构造器的原型。
+
+- 基于原型链委托机制是原型继承的本质。
+
+- JavaScript 中，虽然每个对象都是从 Object.prototype 中克隆出来的，但对象构造器的原型并不仅限于 Object.prototype，还可以动态的指向其它对象。
+
+- null 是原型链的终点。
+
+5. this
+
+- JavaScript 中的 this 总是指向一个对象，具体指向哪个对象是在基于函数的执行环境动态绑定的，而非函数被声明时的环境。<br>
+  除去 with 和 eval 的情况，this 的指向大致可以分为以下 4 种：<br>
+  （1）作为对象的方法调用；<br>
+  （2）作为普通函数调用；<br>
+  （3）构造器调用；<br>
+  （4）Function.prototype.call 或 Function.prototype.apply 调用；
+
+- 作为对象的方法调用：当函数作为对象的方法被调用时，this 指向该对象。示例：
+
+```javascript
+let obj = {
+  age: 20,
+  getAge: function() {
+    console.log(this === obj); // true
+    console.log(this.age); //20
+  }
+};
+
+obj.getAge();
+```
+
+- 作为普通函数调用：当函数不作为对象的属性被调用时，即作为普通函数被调用，此时的 this 总是指向全局对象。在浏览器的 JavaScript 中，这个全局对象就是 window 对象。示例：
+
+```javascript
+window.name = "globalName";
+
+let getName = function() {
+  return this.name;
+};
+
+console.log(getName()); // "globalName"
+```
+
+```javascript
+window.name = "globalName";
+let myObject = {
+  name: "Jerry",
+  getName: function() {
+    return this.name;
+  }
+};
+
+console.log(myObject.getName()); // "Jerry"
+let getName = myObject.getName;
+console.log(getName()); // "globalName"
+```
+
+在 div 节点的事件函数内部，有一个局部的 callback 方法，callback 被作为普通函数调用时，callback 的 this 指向了 window。
+
+```javascript
+<html>
+  <body>
+    <div id="div1">hello world</div>
+    <script>
+      window.id = "window";
+      document.getElementById("div1").onclick = function (){
+        console.log(this.id); // "div1"
+        let callback = function () {
+          console.log(this.id); // "window"
+        }
+        callback();
+      }
+    </script>
+  </body>
+</html>
+```
+
+往往我们想让它指向该 div 节点，可以用一个变量保存该 div 节点的引用。
+
+```javascript
+document.getElementById("div1").onclick = function() {
+  let that = this;
+  let callback = function() {
+    console.log(that.id);
+  };
+  callback();
+};
+```
+
+- 构造器调用：当用 new 运算符调用函数时，该函数总是返回一个对象，通常情况下，构造器里的 this 就指向返回的这个对象。示例：
+
+```javascript
+let MyClass = function() {
+  this.name = "Jerry";
+};
+let obj = new MyClass();
+console.log(obj.name); // "Jerry"
+```
+
+但是需要注意，用 new 调用构造器时，如果构造器显式返回一个 Object 类型的对象，那么此次运算结果最终会返回这个对象，而不是之前的 this。示例：
+
+```javascript
+let MyClass = function() {
+  this.name = "Jerry";
+  return {
+    // 显式返回一个对象
+    name: "Tom"
+  };
+};
+let obj = new MyClass();
+console.log(obj.name); // "Tom"
+```
+
+如果构造器不显示返回任何数据，或者返回的是一个非对象类型的数据，就不会造成上述问题。示例：
+
+```javascript
+let MyClass = function() {
+  this.name = "Jerry";
+  return "Tom"; // 返回String类型
+};
+let obj = new MyClass();
+console.log(obj.name); // "Jerry"
+```
+
+- Function.prototype.call 或 Function.prototype.apply 调用:call 和 apply 可以动态地改变传入函数的 this。示例：
+
+```javascript
+let obj1 = {
+  name: "Jerry",
+  getName: function() {
+    return this.name;
+  }
+};
+let obj2 = {
+  name: "Tom"
+};
+console.log(obj1.getName()); // "Jerry"
+console.log(obj1.getName.call(obj2)); // "Tom"
+```
+
+6. call 和 apply
+
+- call 和 apply 的作用一摸一样，区别仅在于传入参数的形式不同。<br>
+  apply 接受两个参数，第一个参数指定了函数内 this 对象的指向，第二个参数为一个带下标的集合，把集合中的元素作为参数传递给被调用的函数。<br>
+  call 传入的参数不固定，第一个参数也是代表函数体内的 this 指向，从第二个参数往后，每个参数被依次传入函数。示例：
+
+```javascript
+let func = function(a, b, c) {
+  console.log([a, b, c]); // [1, 2, 3]
+};
+func.apply(null, [1, 2, 3]);
+func.call(null, 1, 2, 3);
+```
+
 ### 《工程数学线性代数 第六版》
 
 1. 行列式
@@ -880,6 +1097,9 @@ $ x_1=\frac{D_1}{D}, x_2=\frac{D_2}{D} $
 
 - 代数余子式
 
+````
+
 ```
 
 ```
+````
