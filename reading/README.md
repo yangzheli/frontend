@@ -1053,6 +1053,112 @@ func.apply(null, [1, 2, 3]);
 func.call(null, 1, 2, 3);
 ```
 
+- JavaScript 的参数在内部就是用一个数组来表示的，从这个意义上来说，apply 比 call 的使用率更高。
+
+- 当使用 call 和 apply 的时候，如果传入的第一个参数为 null，函数体内的 this 会指向默认的宿主对象，在浏览器中则是 window。但如果在严格模式下，函数体内的 this 还是为 null。
+
+- 有时候使用 call 和 apply 的目的不在于指定 this 指向，而是另有用途，比如借用其他对象的方法，可以传入 null 代替某个具体的对象。示例：
+
+```javascript
+Math.max.apply(null, [1, 2, 3, 1, 4, 5]); // 5
+```
+
+- call 和 apply 的用途：<br>
+  （1）改变 this 指向；<br>
+  （2）Function.prototype.bind；<br>
+  （3）借用其他对象的方法。<br>
+
+- 简化版的 Function.prototype.bind 实现：
+
+```javascript
+Function.prototype.bind = function(context) {
+  let self = this;
+  return function() {
+    return self.apply(context, arguments);
+  };
+};
+```
+
+- 借用其他对象的方法，示例：
+
+```javascript
+(function() {
+  Array.prototype.push.call(arguments, 3); // [1,2,3]
+})(1, 2);
+```
+
+```javascript
+let obj = {
+  name: "Jerry"
+};
+let func = function() {
+  console.log(this.name); // "Jerry"
+}.bind(obj);
+func();
+```
+
+7. 闭包
+
+作用：
+
+- 封装变量：闭包可以帮助把一些不需要暴露在全局的变量封装成“私有变量”。
+
+- 延长局部变量的生命周期，示例：
+
+```javascript
+let report = function(src) {
+  let img = new Image();
+  img.src = src;
+};
+report("http://xxx.com/getUserInfo");
+```
+
+上述 report 函数常用来数据上报，但在一些低版本浏览器中存在 bug，会丢失 30%左右的数据。因为 imge 是 report 函数中的局部变量，当 report 函数调用结束，img 变量即被销毁，而此时可能还没来得及发送 HTTP 请求。<br>
+可以用闭包将 img 变量封闭起来，解决上面的问题。
+
+```javascript
+let report = (function() {
+  let imgs = [];
+  return function(src) {
+    let img = new Image();
+    imgs.push(img);
+    img.src = src;
+  };
+})();
+```
+
+8. 高阶函数
+
+- 高阶函数是至少满足下列条件之一的函数：函数可以作为参数被传递，函数可以作为返回值输出。JavaScript 中的函数显然满足高阶函数的条件。
+
+- 函数作为参数传递：把函数作为参数传递，表示可以抽离出一部分容易变化的逻辑，将这部分放在函数参数中，分离代码中变与不变的部分。应用场景：回调函数、Array.prototype.sort。
+
+- 回调函数，示例：<br>
+  在 ajax 异步请求中，想在 ajax 请求返回后做一些事情，但又不知道请求返回的确切时间，最常见的方案就是把 callback 函数作为参数传入发起 ajax 请求的方法中，待请求完成后执行 callback 函数。
+
+```javascript
+let getUserInfo = function(userId, callback) {
+  $.ajax("http://xxx.com/getUserInfo?" + userId, function(data) {
+    if (typeof callback === "function") {
+      callback(data);
+    }
+  });
+};
+
+getUserInfo(12313, function(data) {
+  console.log(data.userName);
+});
+```
+
+- 函数作为返回值输出
+
+- 高阶函数的其他应用：<br>
+  （1）函数柯里化（function currying）：一个 currying 的函数会接受一些参数，接受这些参数后，该函数不会立即求值，而是继续返回一个函数，刚才传入的参数在函数形成的闭包被保存起来。等到函数被真正需要求值的时候，之前传入的参数会被一次性用于求值。<br>
+  （2）uncurrying<br>
+  （3）函数节流<br>
+  （4）分时函数<br>
+  （5）惰性加载函数
+
 ### 《工程数学线性代数 第六版》
 
 1. 行列式
@@ -1097,9 +1203,14 @@ $ x_1=\frac{D_1}{D}, x_2=\frac{D_2}{D} $
 
 - 代数余子式
 
-````
+```
+
+```
 
 ```
 
 ```
-````
+
+```
+
+```
