@@ -2,6 +2,8 @@
 
 - [JavaScript 高级程序设计](#JavaScript高级程序设计)
 - [高性能网站建设进阶指南](#高性能网站建设进阶指南)
+- [JavaScript设计模式与开发实践](#JavaScript设计模式与开发实践)
+
 - [工程数学线性代数 第六版](#工程数学线性代数第六版)
 
 ### <<JavaScript 高级程序设计 第 4 版>>
@@ -774,9 +776,233 @@ let p = Person();
 let a = Animal(); // TypeError
 ```
 
-- 类本身具有和普通构造函数一样的行为，
+- 类本身具有和普通构造函数一样的行为，类本身在使用 new 调用时就会被当成构造函数。
 
-30. 扩展操作符
+- ES6 类支持单继承。使用 extends 关键字，就可以继承任何具有[[Construct]]和原型的对象，这意味着不仅可以继承一个类，也可以继承普通的构造函数。
+
+- 继承：
+
+30. 代理与反射
+
+- 代理：代理是目标对象的抽象，它可以用作目标对象的替身，又完全独立于目标对象。目标对象既可以直接被操作，也可以通过代理来操作。但直接操作会绕过代理施予的行为。
+
+- 代理是使用 Proxy 构造函数创建的，这个构造函数接收两个参数：目标对象和处理程序对象。缺少任何一个参数都会抛出 TypeError。
+
+- 空代理：除了作为一个抽象的目标对象，什么也不做。要创建空代理，可以传一个简单的对象字面量作为处理程序对象。例如：
+
+```javascript
+const target = {
+  id: "target"
+};
+const handler = {};
+const proxy = new Proxy(target, handler);
+console.log(target.id);
+console.log(proxy.id);
+```
+
+- 捕获器：捕获器是在处理程序对象中定义的“基本操作的拦截器”。每个捕获器对应一个基本操作，在代理对象上调用这些基本操作时，代理可以在这些操作传播到目标对象前先调用捕获器函数，拦截并修改相应的行为。例如定义一个 get()捕获器：
+
+```javascript
+const target = {
+  id: "target"
+};
+const handler = {
+  // 捕获器在处理程序对象中以方法名为键
+  get() {
+    return "handler";
+  }
+};
+const proxy = new Proxy(target, handler);
+
+console.log(target.id);
+console.log(proxy.id);
+```
+
+- 处理程序对象中所有可以捕获的方法都有对应的（Reflect）API 方法，这些方法和捕获器拦截的方法具有相同的名称和函数签名，而且也具有与被拦截方法相同的行为。例如用反射 API 像下面这样定义空代理对象：
+
+```javascript
+const target = {
+  id: "target"
+};
+const handler = {
+  get() {
+    return Reflect.get(...arguments);
+  }
+};
+const proxy = new Proxy(target, handler);
+
+console.log(target.id);
+console.log(proxy.id);
+```
+
+- 状态标记：很多反射方法返回称作“状态标记”的布尔值，表示执行的操作是否成功。例如：
+
+```javascript
+// 初始代码
+const o ={};
+try{
+  Object.defineProperty(o,'foo','bar');
+  console.log('success');
+}else{
+  console.log('failure');
+}
+```
+
+```javascript
+// 重构后的代码
+const o = {};
+if (Reflect.defineProperty(o, "foo", { value: "bar" })) {
+  console.log("success");
+} else {
+  console.log("failure");
+}
+```
+
+- 多层拦截：代理可以拦截反射 API 的操作，这意味着可以创建另一个代理，通过它去代理另一个代理，这样就可以在目标对象构建多层拦截网。
+
+```javascript
+const target = {
+  id: "target"
+};
+const firstProxy = new Proxy(target, {
+  get() {
+    console.log("first proxy");
+    return Reflect.get(...arguments);
+  }
+});
+const secondProxy = new Proxy(target, {
+  get() {
+    console.log("second proxy");
+    return Reflect.get(...arguments);
+  }
+});
+```
+
+- 代理的问题：（1）代理中的 this；（2）代理与内部槽位。
+
+- 代理模式：（1）跟踪属性访问：通过捕获 get、set 和 has 等操作，可以知道对象属性什么时候被访问；<br>
+  （2）隐藏属性：代理内部的实现对外部代码是不可见的，可以轻易的隐藏目标对象上的属性；<br>
+  （3）属性验证：由于所有赋值操作都会触发 set()捕获器，所以可以根据所赋的值决定是允许还是拒绝赋值；<br>
+  （4）函数与构造函数参数验证；<br>
+  （5）数据绑定与可观察对象；
+
+31. 函数
+
+- 函数实际上是对象，每个函数都是 Function 类型的实例。因为函数是对象，函数名就是指向函数对象的指针。
+
+- 函数定义方式有：函数声明，函数表达式，箭头函数，Funtion 构造函数。示例：
+
+```javascript
+// 函数声明
+function sum(num1, num2) {
+  return num1 + num2;
+}
+
+// 函数表达式
+let sum = function(num1, num2) {
+  return num1 + num2;
+};
+
+// 箭头函数
+let sum = (num1, num2) => {
+  return num1 + num2;
+};
+
+// Function 构造函数（不推荐）
+let sum = new Function("num1", "num2", "return num1 + num2");
+```
+
+- 箭头函数：ES6 新增(=>)定义函数表达式的能力，箭头函数实例化函数对象与正式的函数表达式创建函数的行为是相同的，任何可以使用函数表达式的地方，都可以使用箭头函数。
+
+- 函数名就是指向函数的指针，所以它们跟其它包含对象指针的变量具有相同的行为，这意味着一个函数可以有多个名称。示例：
+
+```javascript
+function sum(num1, num2) {
+  return num1 + num2;
+}
+console.log(sum(18, 12)); // 30
+
+let anotherSum = sum;
+console.log(anotherSum(18, 12)); // 30
+
+sum = null;
+console.log(anotherSum(18, 12)); // 30
+```
+
+注意：使用不带括号的函数名会访问函数指针，而不会执行函数。
+
+- 函数参数：ECMAScript 函数的参数跟大多数其他语言不同，ECMAScript 函数既不关心传入的参数个数，也不关心这些参数的数据类型。主要是因为 ECMAScript 函数的参数在内部表现为一个数组，函数被调用时总会接收一个数组，但函数并不关心这个数组包含什么。事实上，使用 function 关键字定义函数时，可以在函数内部访问 arguments 对象，从中取得传进来的每个参数值。<br>
+  ECMAScript 函数的参数只是为了方便才写出来的，并不是必须写出来的，ECMAScript 根本不存在验证命名参数的机制。<br>
+  arguments 对象可以和函数命名参数一起使用。
+
+- 箭头函数的参数：如果函数是使用箭头语法定义的，那么传给函数的参数将不能使用 arguments 关键字访问，只能通过定义的命名参数访问。
+
+- ECMAScript 中所有参数都是按值传递的，不可能按引用传递参数。如果把对象作为参数传递，那么传递的值就是这个对象的引用。
+
+- ECMAScript 中函数是没有重载的，如果定义了两个同名函数，那么后定义的会覆盖先定义的。
+
+- 函数声明提升：JavaScript 引擎在任何代码执行之前，会先读取函数声明，并在执行上下文中生成函数定义。而函数表达式必须等到代码执行到它那一行，才会在执行上下文生成函数定义。示例：
+
+```javascript
+console.log(add(12, 8));
+
+function add(num1, num2) {
+  return num1 + num2;
+}
+
+// TypeError
+console.log(mul(3, 4));
+var mul = function(num1, num2) {
+  return num1 * num2;
+};
+```
+除了函数在什么时候有定义外，函数声明和函数表达式是等价的。
+
+- 函数属性和方法：ECMAScript中的函数都是对象，因此有属性和方法。每个函数都有两个属性：length和prototype。length属性保存函数定义的命名参数的个数，prototype属性保存引用类型所有实例方法，这意味着toString()、valueOf()等方法实际上都保存在prototype上。
+
+- 函数表达式的不同形式：
+```javascript
+let functionName = function(arge){
+  // 函数体
+}
+```
+这样创建的函数叫匿名函数，因为function关键字后面没有标识符，未赋值给其他变量的匿名函数的name属性是空字符串。
+
+- 尾调用优化：ES6新增了一项内存管理优化机制，让JavaScript引擎在满足条件时可以重用栈帧。尾递归优化的条件就是确定外部栈帧真的没有必要存在了：<br>
+（1）代码在严格模式下执行；<br>
+（2）外部函数的返回值是对尾调用函数的调用；<br>
+（3）尾调用函数返回后不需要执行额外的逻辑；<br>
+（4）尾调用函数不是引用外部函数作用域中自由变量的闭包。
+
+- 立即调用的函数表达式（IIFE）：使用IIFE可以模拟块级作用域，即在一个函数表达式内部声明变量，然后立即执行这个函数。
+```javascript
+(function(){
+  // 块作用域
+})();
+```
+
+32. 扩展运算符
+
+- 扩展运算符(...)：ES6 新增，使用扩展运算符可以简洁地操作和组合集合数据。扩展运算符最有用的场景就是函数定义中的参数列表，既可以用于调用函数时传参，也可以用于定义函数参数。示例：
+
+```javascript
+function add() {
+  let sum = 0;
+  for (let i = 0; i < arguments.length; i++) {
+    sum += arguments[i];
+  }
+  return sum;
+}
+
+let arr = [1, 2, 3, 4];
+console.log(add.apply(null, arr)); // 10
+// 可以用来替代apply方法
+console.log(add(...arr)); // 10
+```
+
+33. 期约（Promise）
+
+34. 异步函数
 
 ### 《高性能网站建设进阶指南》
 
@@ -1159,6 +1385,71 @@ getUserInfo(12313, function(data) {
   （4）分时函数<br>
   （5）惰性加载函数
 
+9. 单例模式
+
+- 单例模式：保证一个类只有一个实例，并提供一个访问它的全局访问点。
+
+- 单例模式是一种常用的设计模式，有一些对象我们往往只需要一个，如线程池、全局缓存、浏览器中的 window 对象等等。
+
+- 实现：用一个变量标志是否已经为某个类创建过对象，如果是，则在下一次获取该类的实例时，直接返回之前创建的对象。示例：
+
+```javascript
+let Singleton = function(name) {
+  this.name = name;
+  this.instance = null;
+};
+Singleton.prototype.getName = function() {
+  console.log(this.name);
+};
+
+Singleton.getInstance = function(name) {
+  if (!this.instance) {
+    this.instance = new Singleton(name);
+  }
+  return this.instance;
+};
+
+let a = Singleton.getInstance("Tom"),
+  b = Singleton.getInstance("Jerry");
+console.log(a === b); // true
+```
+
+- 上述方式实现简单，但有一个问题，就是增加了这个类的“不透明性”，Singleton 的使用者必须知道这是一个单例类，和以往用 new 来获取对象不同，这里使用 Singleton.getInstance 来获取对象。下面将实现一个“透明”的单例类，用户从这个类创建对象，和其他任何普通类一样。示例：
+
+```javascript
+```
+
+- 使用代理实现单例模式，示例：
+
+```javascript
+let CreateDiv = function(html) {
+  this.html = html;
+  this.init();
+};
+
+CreateDiv.prototype.init = function() {
+  let div = document.createElement("div");
+  div.innerHTML = this.html;
+  document.body.appendChild(div);
+};
+
+// 代理类‘
+let ProxySingletonCreateDiv = (function() {
+  let instance;
+  return function(html) {
+    if (!instance) {
+      instance = new CreateDiv(html);
+    }
+
+    return instance;
+  };
+})();
+
+let a = new ProxySingletonCreateDiv("Tom"),
+  b = new ProxySingletonCreateDiv("Jerry");
+console.log(a === b);
+```
+
 ### 《工程数学线性代数 第六版》
 
 1. 行列式
@@ -1203,7 +1494,7 @@ $ x_1=\frac{D_1}{D}, x_2=\frac{D_2}{D} $
 
 - 代数余子式
 
-```
+````
 
 ```
 
@@ -1214,3 +1505,6 @@ $ x_1=\frac{D_1}{D}, x_2=\frac{D_2}{D} $
 ```
 
 ```
+
+```
+````
