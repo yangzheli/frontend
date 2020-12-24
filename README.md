@@ -41,7 +41,7 @@
 - [什么是虚拟 DOM？](#什么是虚拟DOM)
 - [浏览器是如何渲染页面的？](#浏览器是如何渲染页面的)
 - [script 标签的 defer 和 async 属性有什么作用？](#script标签的defer和async属性有什么作用)
-- [DOMContentLoaded 和 load 的区别？](#DOMContentLoaded和load的区别)
+- [DOMContentLoaded 和 onload 的区别？](#DOMContentLoaded和onload的区别)
 
 [HTTP](#HTTP)
 
@@ -834,9 +834,9 @@ HTML 解释器在构建 DOM 树过程中，如果遇到 script 标签（没有 d
 - defer：文档解析和 JavaScript 代码的加载（不执行）是异步执行的，JavaScript 代码的执行需要等到文档中所有元素解析完成之后，DOMContentLoaded 事件触发执行之前。如果存在多个 defer 属性的 JavaScript 代码，它们按照加载顺序执行；
 - async：文档解析和 JavaScript 代码的加载是异步执行的，JavaScript 代码加载完成后会立即执行，此时文档解析会停止。
 
-### DOMContentLoaded 和 load 的区别？
+### DOMContentLoaded 和 onload 的区别？
 
-DOMContentLoaded 在 HTML 文档加载和解析完成之后触发，无需等待样式表、图像和子框架的完成加载，而 load 在 HTML 所有相关资源被加载完成后触发。
+DOMContentLoaded 在 HTML 文档加载和解析完成之后触发，无需等待样式表、图像和子框架的完成加载，而 onload 在 HTML 所有相关资源被加载完成后触发。
 
 ## HTTP
 
